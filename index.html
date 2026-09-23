@@ -312,7 +312,7 @@ footer{margin-top:34px;font-size:11px;color:var(--ink3)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* --- Cómo se conecta --- */
-.flow{display:grid;gap:0}
+.cflow{display:grid;gap:0}
 .fnode{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
 .fnode .fi2{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff}
 .fnode .fi2 svg{width:22px;height:22px}
@@ -321,8 +321,8 @@ footer{margin-top:34px;font-size:11px;color:var(--ink3)}
 .fnode .who3{font:700 10px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
 .farrow{height:26px;display:grid;place-items:center;color:var(--line2)}
 .farrow svg{width:18px;height:18px}
-@media (min-width:980px){.flow{grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr);align-items:stretch}
- .flow .farrow{height:auto}.flow .farrow svg{transform:rotate(-90deg)}
+@media (min-width:980px){.cflow{grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr);align-items:stretch}
+ .cflow .farrow{height:auto}.cflow .farrow svg{transform:rotate(-90deg)}
  .fnode{grid-template-columns:1fr;align-content:start}}
 .conn-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}
 .conn-g .card{padding:16px}
@@ -828,7 +828,7 @@ function renderRepo(){
 
 // =================== CÓMO SE CONECTA ===================
 const ARW=`<div class="farrow" aria-hidden="true">${'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M6 14l6 6 6-6"/></svg>'}</div>`;
-function flow(nodes){return `<div class="flow">${nodes.map(n=>`<div class="fnode"><div class="fi2" style="background:${n[0]}">${I[n[1]]}</div><div><span class="who3">${n[2]}</span><b>${n[3]}</b><small>${n[4]}</small></div></div>`).join(ARW)}</div>`}
+function flow(nodes){return `<div class="cflow">${nodes.map(n=>`<div class="fnode"><div class="fi2" style="background:${n[0]}">${I[n[1]]}</div><div><span class="who3">${n[2]}</span><b>${n[3]}</b><small>${n[4]}</small></div></div>`).join(ARW)}</div>`}
 const CX={
  finanzas:{intro:"Las ventas se registran donde ya se registran hoy. El sistema las recoge solo, las ordena y el agente las lee cada mañana.",
   nodes:[["var(--ink3)","pos","En el local","Caja de cada local","Cada venta queda registrada como siempre."],["var(--ic-fin)","db","Todos los días","Base de datos de Guzza","Las ventas del local y de las apps de delivery llegan solas, por conexión directa."],["var(--acai2)","bot","Cada mañana","Agente financiero","Revisa ventas, márgenes y comisiones, y detecta lo que se sale de lo normal."],["var(--ok)","dash","Para el dueño","Panel y resumen por WhatsApp","Todo el negocio en una pantalla y un resumen a las 8:00."]],
