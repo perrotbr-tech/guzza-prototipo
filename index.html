@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Guzza · Perrot Tech</title>
+<meta name="description" content="Prototipo Perrot Tech para Guzza: panel del dueño, agente de consumo y asistente WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F6F4F9; --surface:#FFFFFF; --surface2:#F1ECF7; --line:#E3DCEC; --line2:#CFC4DE;
+  --ink:#1E1430; --ink2:#5E5470; --ink3:#8E859E;
+  --acai:#4A2170; --acai2:#7B45A6; --acai-soft:#EDE3F6; --brand:#4A2170;
+  --pt:#1E5BFF; --pt2:#3DD9C0;
+  --banana:#F2C94C; --banana-soft:#FFF6D8;
+  --ok:#1F9D6B; --ok-bg:#E3F5EC; --warn:#B86E00; --warn-bg:#FFF2DB; --crit:#C7362B; --crit-bg:#FBE5E2;
+  --wa:#0B7A5E; --wa-bg:#E9E3DA; --wa-me:#D9FDD3; --wa-them:#FFFFFF;
+  --shadow:0 1px 2px rgba(30,20,48,.06),0 6px 20px rgba(30,20,48,.06);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#120C1B; --surface:#1B1328; --surface2:#241A35; --line:#2F2442; --line2:#40325A;
+    --ink:#EFE9F7; --ink2:#B5AAC7; --ink3:#857A99;
+    --acai:#B98BE0; --acai2:#9C6BC9; --acai-soft:#2C1F40; --brand:#3A1A5A;
+    --pt:#6C93FF; --pt2:#3DD9C0;
+    --banana:#F2C94C; --banana-soft:#3A3014;
+    --ok:#3DC98B; --ok-bg:#12352A; --warn:#F0A83A; --warn-bg:#3A2C10; --crit:#F0655A; --crit-bg:#3E1A17;
+    --wa:#3DC9A0; --wa-bg:#0E1512; --wa-me:#144D37; --wa-them:#1F2C33;
+    --shadow:none;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{font-family:Montserrat,system-ui,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.01em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--pt);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:16px}
+
+/* barra */
+.top{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;padding-top:env(safe-area-inset-top,0px)}
+.top .wrap{display:flex;align-items:center;gap:12px;min-height:56px}
+.top .cl{font:800 18px Montserrat,sans-serif;letter-spacing:.02em}
+.top .cl small{display:block;font:600 10px Montserrat,sans-serif;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+.top .by{margin-left:auto;display:flex;align-items:center;gap:8px;font:800 11px Montserrat,sans-serif;letter-spacing:.08em;opacity:.95}
+.top .by span{color:var(--pt2)}
+.demo{background:var(--banana);color:#3A2A00;font:600 12px "IBM Plex Sans",sans-serif;text-align:center;padding:5px 12px}
+
+/* navegación */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabs button{appearance:none;border:0;background:none;padding:9px 2px 8px;display:grid;justify-items:center;gap:3px;font:600 11px Montserrat,sans-serif;color:var(--ink3);cursor:pointer}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-selected="true"]{color:var(--acai)}
+@media (min-width:900px){
+  body{padding-bottom:40px}
+  nav.tabs{position:sticky;top:56px;bottom:auto;border-top:0;border-bottom:1px solid var(--line)}
+  nav.tabs .in{max-width:1040px;display:flex;gap:4px;padding-inline:16px}
+  nav.tabs button{grid-auto-flow:column;gap:8px;padding:12px 14px;font-size:13px;border-bottom:3px solid transparent}
+  nav.tabs button[aria-selected="true"]{border-bottom-color:var(--acai)}
+  nav.tabs button svg{width:18px;height:18px}
+}
+
+main{padding-block:22px 30px}
+section{margin-top:26px}
+.sh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.sh h2{font-size:17px;font-weight:800}
+.sh .n{font-size:12px;color:var(--ink3)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.bd{padding:16px}
+.muted{color:var(--ink3)}
+.small{font-size:12px}
+.note{font-size:12px;color:var(--ink3);margin-top:10px}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.g2{grid-template-columns:minmax(0,1fr)}}
+
+/* portada */
+.hero{background:var(--brand);color:#fff;border-radius:20px;padding:26px 22px;position:relative;overflow:hidden}
+.hero .ey{font:600 11px Montserrat,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--banana)}
+.hero h1{font-size:clamp(26px,5vw,40px);font-weight:800;margin-top:8px;line-height:1.1;max-width:18ch}
+.hero p{margin:12px 0 0;max-width:52ch;color:rgba(255,255,255,.86)}
+.hero .berries{position:absolute;right:-30px;bottom:-40px;width:200px;height:200px;opacity:.9}
+.hero .cta{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{appearance:none;border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 14px;font:700 13px Montserrat,sans-serif;cursor:pointer}
+.btn.pri{background:var(--banana);border-color:var(--banana);color:#2B1F00}
+.btn.acai{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+.btn.sm{padding:7px 10px;font-size:12px}
+.mods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.mods{grid-template-columns:minmax(0,1fr)}}
+.mod{appearance:none;text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;box-shadow:var(--shadow)}
+.mod:hover{border-color:var(--acai2)}
+.mod .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--acai-soft);color:var(--acai)}
+.mod .ic svg{width:24px;height:24px}
+.mod h3{font-size:16px;font-weight:800}
+.mod p{margin:0;color:var(--ink2);font-size:14px}
+.mod .q{font-size:12px;color:var(--acai);font-weight:600}
+.dolores{display:grid;gap:10px}
+.dolor{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.dolor b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--banana-soft);color:var(--warn);font:800 13px Montserrat,sans-serif}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:3px;min-height:96px;box-shadow:var(--shadow)}
+.kpi .v{font:800 23px/1.1 Montserrat,sans-serif;letter-spacing:-.02em}
+.kpi .v small{font-size:13px;color:var(--ink2);font-weight:600;margin-left:2px}
+.kpi .l{font-size:12px;color:var(--ink2)}
+.kpi .d{font-size:11px;color:var(--ink3);margin-top:auto}
+.kpi.hi{border-color:var(--acai2)} .kpi.hi .v{color:var(--acai)}
+.kpi .v.bad{color:var(--crit)} .kpi .v.good{color:var(--ok)}
+
+/* selector */
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{appearance:none;border:0;background:none;padding:8px 12px;font:600 12px Montserrat,sans-serif;cursor:pointer;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--brand);color:#fff}
+
+/* tablas y barras */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font:600 10px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right;white-space:nowrap}
+tr.tot td{font-weight:700;border-top:2px solid var(--line)}
+.hb{display:grid;gap:12px}
+.hbr{display:grid;grid-template-columns:minmax(90px,130px) 1fr auto;gap:10px;align-items:center;font-size:13px}
+.hbr .tr{height:12px;background:var(--surface2);border-radius:6px;overflow:hidden;display:flex}
+.hbr .tr i{display:block;height:100%}
+.hbr .v{font-weight:600;white-space:nowrap}
+.stack{height:22px;border-radius:8px;overflow:hidden;display:flex;margin:8px 0 10px}
+.stack i{display:block;height:100%}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink2)}
+.leg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font:600 11px Montserrat,sans-serif;white-space:nowrap}
+.p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)} .p-crit{background:var(--crit-bg);color:var(--crit)} .p-acai{background:var(--acai-soft);color:var(--acai)}
+.alert{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.alert:last-child{border-bottom:0}
+.alert .dot{width:10px;height:10px;border-radius:50%;margin-top:6px}
+.alert .t{font-weight:600}
+.alert .m{font-size:13px;color:var(--ink2);margin-top:2px}
+
+/* heatmap */
+.heat{display:grid;grid-template-columns:34px repeat(12,minmax(0,1fr));gap:3px;font-size:10px;color:var(--ink3)}
+.heat .c{aspect-ratio:1/1;border-radius:4px;max-width:100%}
+.heat .h{text-align:center}
+.heat .d{display:flex;align-items:center}
+
+/* agente */
+.rec{padding:16px;border-bottom:1px solid var(--line);display:grid;gap:8px}
+.rec:last-child{border-bottom:0}
+.rec .t{font:800 15px Montserrat,sans-serif}
+.rec .why{font-size:13px;color:var(--ink2)}
+.rec .imp{font-size:13px}
+.rec .acts{display:flex;gap:8px;flex-wrap:wrap}
+.rec.ok{background:var(--ok-bg)} .rec.no{opacity:.55}
+.ask{display:flex;flex-wrap:wrap;gap:8px}
+.chip{appearance:none;border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:7px 12px;font:600 12px "IBM Plex Sans",sans-serif;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.answer{margin-top:12px;background:var(--acai-soft);border-radius:12px;padding:14px;font-size:14px;min-height:60px}
+.answer .who{font:700 11px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--acai);margin-bottom:4px}
+
+/* whatsapp */
+.wa-grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:820px){.wa-grid{grid-template-columns:minmax(0,1fr)}}
+.phone{border-radius:28px;border:8px solid #17111F;background:var(--wa-bg);overflow:hidden;max-width:380px;width:100%;margin:0 auto;box-shadow:var(--shadow)}
+.phone .hd{background:var(--wa);color:#fff;display:flex;align-items:center;gap:10px;padding:12px 14px}
+.phone .av{width:34px;height:34px;border-radius:50%;background:var(--brand);display:grid;place-items:center;font:800 14px Montserrat,sans-serif;color:#fff;flex:none}
+.phone .hd b{font:700 14px "IBM Plex Sans",sans-serif;display:block}
+.phone .hd small{font-size:11px;opacity:.85}
+.chat{height:460px;overflow-y:auto;padding:14px 10px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:84%;padding:8px 10px 6px;border-radius:10px;font-size:14px;line-height:1.4;box-shadow:0 1px 1px rgba(0,0,0,.08);white-space:pre-line}
+.msg.them{background:var(--wa-them);align-self:flex-start;border-top-left-radius:2px}
+.msg.me{background:var(--wa-me);align-self:flex-end;border-top-right-radius:2px}
+.msg .tm{display:block;text-align:right;font-size:10px;color:var(--ink3);margin-top:2px}
+.opts{display:grid;gap:6px;align-self:stretch;margin-inline:4px}
+.opts button{appearance:none;border:0;background:var(--wa-them);color:var(--wa);font:600 14px "IBM Plex Sans",sans-serif;padding:9px;border-radius:10px;cursor:pointer;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.opts button.on{background:var(--wa);color:#fff}
+.opts .row{display:flex;flex-wrap:wrap;gap:6px}
+.opts .row button{flex:1 1 auto;font-size:13px;padding:8px 10px}
+.typing{align-self:flex-start;background:var(--wa-them);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--ink3)}
+.ticket{border:2px dashed var(--line2);border-radius:14px;padding:16px;background:var(--surface)}
+.ticket .code{font:800 22px Montserrat,sans-serif;color:var(--acai)}
+.ticket ul{margin:8px 0 0;padding-left:18px}
+.steps{display:grid;gap:10px;counter-reset:s}
+.step{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;font-size:14px}
+.step b{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--acai-soft);color:var(--acai);font:800 13px Montserrat,sans-serif}
+
+/* propuesta */
+.etapas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.etapas{grid-template-columns:minmax(0,1fr)}}
+.etapa{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;align-content:start;box-shadow:var(--shadow)}
+.etapa .n{font:800 12px Montserrat,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--acai2)}
+.etapa h3{font-size:18px;font-weight:800}
+.etapa .dur{display:inline-block;background:var(--banana-soft);color:var(--warn);font:700 12px Montserrat,sans-serif;padding:3px 10px;border-radius:999px;justify-self:start}
+.etapa ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink2);display:grid;gap:4px}
+.etapa .ent{font-size:13px;border-top:1px solid var(--line);padding-top:10px}
+.pt-card{background:#0F1C2E;color:#F2F6FF;border-radius:16px;padding:22px;display:grid;gap:10px}
+.pt-card .wm{font:800 15px Montserrat,sans-serif;letter-spacing:.08em}
+.pt-card .wm span{color:var(--pt2)}
+.pt-card p{margin:0;color:#B9C4D8;max-width:62ch}
+.pt-card .ct{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:14px;margin-top:6px}
+.pt-card .ct b{font-family:Montserrat,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8FA0BD;display:block}
+footer{margin-top:30px;font-size:11px;color:var(--ink3)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="cl">Guzza<small>Prototipo</small></div>
+    <div class="by"><svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true"><rect x="4" y="4" width="20" height="5" rx="1.5" fill="#fff"/><rect x="4" y="13.5" width="14" height="5" rx="1.5" fill="#fff"/><rect x="4" y="23" width="5" height="5" rx="1.5" fill="#fff"/><circle cx="24" cy="25.5" r="3.5" fill="#3DD9C0"/></svg>PERROT <span>TECH</span></div>
+  </div>
+  <div class="demo">Prototipo con datos de ejemplo · con sus datos reales, las cifras cambian</div>
+</header>
+
+<nav class="tabs" aria-label="Secciones"><div class="in" id="tabs"></div></nav>
+
+<main class="wrap" id="view"></main>
+
+<script>
+// =================== ÍCONOS ===================
+const I={
+ home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+ panel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>',
+ agent:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.3" fill="currentColor"/><circle cx="15" cy="13" r="1.3" fill="currentColor"/></svg>',
+ wa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.3-4.3A9 9 0 1 1 21 12z"/></svg>',
+ plan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h6"/><path d="M17 15l2 2 3-4"/></svg>'
+};
+const TABS=[["inicio","Inicio",I.home],["panel","Panel",I.panel],["agente","Agente",I.agent],["whatsapp","WhatsApp",I.wa],["propuesta","Propuesta",I.plan]];
+
+// =================== UTILIDADES ===================
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const clp=n=>"$"+Math.round(n).toLocaleString("es-CL");
+const mill=n=>"$"+(n/1e6).toFixed(1).replace(".",",")+" M";
+const pc=(x,d=0)=>(x*100).toFixed(d).replace(".",",")+"%";
+const sum=a=>a.reduce((s,x)=>s+x,0);
+
+// =================== SUPUESTOS (editables) ===================
+// Todo el prototipo se calcula desde aquí. Son supuestos de ejemplo, no datos de Guzza.
+const S={
+  comisionApp:0.30,      // comisión referencial de la app de delivery
+  comisionWeb:0.032,     // pasarela de pago del sitio
+  pulpaKg:9000,          // costo pulpa de açaí por kg (importada)
+  metaMerma:0.05
+};
+const PROD=[
+  {id:"p",nombre:"Bowl pequeño 300 ml",precio:5490,pulpa:150,base:420,top:3,envase:210,peso:.24},
+  {id:"m",nombre:"Bowl mediano 500 ml",precio:6990,pulpa:250,base:560,top:4,envase:260,peso:.38},
+  {id:"g",nombre:"Bowl grande 700 ml",precio:8990,pulpa:350,base:720,top:5,envase:320,peso:.22},
+  {id:"s",nombre:"Smoothie de açaí",precio:4990,pulpa:180,base:300,top:0,envase:180,peso:.11},
+  {id:"l",nombre:"Açaí para llevar 1 L",precio:12990,pulpa:700,base:0,top:0,envase:450,peso:.05}
+];
+const TOPS=[["Granola",120],["Plátano",110],["Frutilla",190],["Leche en polvo",90],["Miel",80],["Coco rallado",70],["Crema de avellana",260],["Mantequilla de maní",210],["Arándano",240],["Kiwi",150],["Chía",60],["Leche condensada",110]];
+const LOCALES=["Llacolen","Mall La Portada"];
+const CANALES=["Local","App de delivery","Web"];
+const DIAS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+const HORAS=[10,11,12,13,14,15,16,17,18,19,20,21];
+
+// =================== DATOS DE EJEMPLO (30 días) ===================
+let seed=20260923; const rnd=()=>{seed=(seed*1664525+1013904223)%4294967296;return seed/4294967296};
+const pick=w=>{let r=rnd()*sum(w),i=0;for(;i<w.length;i++){r-=w[i];if(r<=0)return i}return w.length-1};
+const pairs=[[1,0,3.2],[7,1,2.6],[6,2,2.4],[2,8,1.6],[4,0,1.5],[9,2,1.2]];
+function toppings(n){const out=new Set();let guard=0;while(out.size<n&&guard++<30){if(out.size&&rnd()<.55){const last=[...out][out.size-1];const cand=pairs.filter(p=>p[0]===last||p[1]===last);if(cand.length){const p=cand[pick(cand.map(c=>c[2]))];out.add(p[0]===last?p[1]:p[0]);continue}}out.add(pick([9,8,6,4,3,3,5,4,3,2,2,3]))}return [...out]}
+const ORD=[];
+const horaW=[2,4,7,10,9,6,5,7,9,8,5,2];
+for(let d=0;d<30;d++){const dow=d%7; for(let l=0;l<2;l++){
+  const base=(l===0?62:84)*(dow>=4?1.28:1)*(dow===1?.86:1);
+  const n=Math.round(base*(.9+rnd()*.2));
+  for(let k=0;k<n;k++){
+    let hi=pick(horaW); if(dow===1&&(hi===6||hi===7)&&rnd()<.4) hi=pick(horaW);
+    const c=pick(l===0?[52,38,10]:[66,26,8]);
+    const p=pick(PROD.map(x=>x.peso));
+    const tp=PROD[p].top?toppings(PROD[p].top):[];
+    ORD.push({d,dow,l,c,p,h:HORAS[hi],tp});
+  }}}
+
+// =================== CÁLCULOS ===================
+const topCost=ids=>sum(ids.map(i=>TOPS[i][1]));
+const avgTop=PROD.map(p=>{const o=ORD.filter(x=>PROD[x.p]===p&&x.tp.length);return o.length?sum(o.map(x=>topCost(x.tp)))/o.length:0});
+const costo=PROD.map((p,i)=>{const pul=p.pulpa/1000*S.pulpaKg;return {pulpa:pul,base:p.base,top:avgTop[i],envase:p.envase,total:pul+p.base+avgTop[i]+p.envase}});
+function margenUnit(pi,c){const p=PROD[pi];const com=c===1?S.comisionApp:c===2?S.comisionWeb:0;return p.precio-costo[pi].total-p.precio*com}
+function agg(filter){
+  const O=ORD.filter(filter);
+  const venta=sum(O.map(o=>PROD[o.p].precio));
+  const cost=sum(O.map(o=>costo[o.p].total));
+  const com=sum(O.map(o=>PROD[o.p].precio*(o.c===1?S.comisionApp:o.c===2?S.comisionWeb:0)));
+  return {n:O.length,venta,cost,com,margen:venta-cost-com,ticket:O.length?venta/O.length:0,O};
+}
+// merma de fruta (ejemplo): plátano y frutilla sobre la meta
+const MERMA=[{f:"Plátano",compra:612,merma:.12,kg:1300},{f:"Frutilla",compra:388,merma:.09,kg:3500},{f:"Kiwi",compra:96,merma:.04,kg:2900},{f:"Arándano",compra:54,merma:.03,kg:7800}];
+MERMA.forEach(m=>{m.perdida=m.compra*m.merma*m.kg;m.sobre=Math.max(0,m.merma-S.metaMerma)*m.compra*m.kg});
+
+// =================== ESTADO ===================
+let tab="inicio", filLocal=-1, recState={};
+try{const t=location.hash.replace("#","");if(TABS.some(x=>x[0]===t))tab=t}catch(e){}
+
+function nav(){
+  $("#tabs").innerHTML=TABS.map(t=>`<button role="tab" aria-selected="${t[0]===tab}" data-tab="${t[0]}">${t[2]}<span>${t[1]}</span></button>`).join("");
+  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>go(b.dataset.tab));
+}
+function go(t){tab=t;try{history.replaceState(null,"","#"+t)}catch(e){}render();window.scrollTo({top:0})}
+
+// =================== INICIO ===================
+function vInicio(){
+  const A=agg(()=>true);
+  return `<div class="hero">
+    <div class="ey">Perrot Tech · agentes IA y sistemas a medida</div>
+    <h1>Cada bowl, con su margen real a la vista</h1>
+    <p>Un sistema hecho para Guzza: ve cuánto deja cada venta por local y canal, deja que un agente encuentre qué se vende y cuándo, y recibe pedidos por WhatsApp sin pagar comisión.</p>
+    <div class="cta"><button class="btn pri" data-go="panel">Ver el panel</button><button class="btn ghost" data-go="whatsapp">Probar el pedido por WhatsApp</button></div>
+    <svg class="berries" viewBox="0 0 200 200" aria-hidden="true"><circle cx="70" cy="90" r="34" fill="#6B3597"/><circle cx="120" cy="70" r="28" fill="#5A2A85"/><circle cx="130" cy="125" r="38" fill="#7B45A6"/><circle cx="78" cy="148" r="24" fill="#5A2A85"/><circle cx="62" cy="82" r="7" fill="#fff" opacity=".25"/><circle cx="116" cy="112" r="9" fill="#fff" opacity=".2"/><path d="M118 42c8-14 22-20 34-18-4 12-16 20-30 22" fill="#3DD9C0"/></svg>
+  </div>
+  <section><div class="sh"><h2>Lo que un negocio como Guzza suele no ver</h2></div>
+    <div class="card bd dolores">
+      <div class="dolor"><b>1</b><div><b style="all:unset;font-weight:600">El margen se va en la app de delivery.</b><div class="muted small">Con una comisión de 30 %, un bowl grande deja casi la mitad que en el local.</div></div></div>
+      <div class="dolor"><b>2</b><div><b style="all:unset;font-weight:600">Los toppings a gusto y la fruta que se pierde.</b><div class="muted small">Sin receta medida por gramos, el costo real de cada bowl es una estimación.</div></div></div>
+      <div class="dolor"><b>3</b><div><b style="all:unset;font-weight:600">Crecer con franquicias exige números ordenados.</b><div class="muted small">Un franquiciado compra un modelo que se puede medir y replicar.</div></div></div>
+    </div></section>
+  <section><div class="sh"><h2>Tres módulos, un solo sistema</h2><span class="n">toca uno para verlo</span></div>
+    <div class="mods">
+      <button class="mod" data-go="panel"><div class="ic">${I.panel}</div><h3>Panel del dueño</h3><p>Ventas por local y canal, costo real por bowl, merma de fruta y alertas.</p><span class="q">¿Cuánto me deja un bowl grande por la app?</span></button>
+      <button class="mod" data-go="agente"><div class="ic">${I.agent}</div><h3>Agente de consumo</h3><p>Lee cada venta y propone combos, horarios y precios. Tú apruebas.</p><span class="q">¿Qué toppings se piden juntos?</span></button>
+      <button class="mod" data-go="whatsapp"><div class="ic">${I.wa}</div><h3>Asistente WhatsApp</h3><p>El cliente arma su bowl y lo retira. El pedido llega directo al local.</p><span class="q">Sin comisión de app</span></button>
+    </div></section>
+  <section><div class="kpis">
+    <div class="kpi"><div class="v num">${mill(A.venta)}</div><div class="l">Ventas del mes de ejemplo</div><div class="d">${A.n.toLocaleString("es-CL")} pedidos · 2 locales</div></div>
+    <div class="kpi"><div class="v num">${clp(A.ticket)}</div><div class="l">Ticket promedio</div><div class="d">todos los canales</div></div>
+    <div class="kpi hi"><div class="v num">${pc(A.margen/A.venta)}</div><div class="l">Margen después de insumos y comisiones</div><div class="d">antes de arriendo y sueldos</div></div>
+  </div></section>
+  <footer>Prototipo desarrollado por Perrot Tech para la reunión con Guzza. Datos de ejemplo generados para la demostración; no corresponden a ventas reales.</footer>`;
+}
+
+// =================== PANEL ===================
+function vPanel(){
+  const f=o=>filLocal<0||o.l===filLocal;
+  const A=agg(f);
+  const porLocal=LOCALES.map((nom,i)=>({nom,...agg(o=>o.l===i)}));
+  const porCanal=CANALES.map((nom,i)=>({nom,...agg(o=>f(o)&&o.c===i)}));
+  const col=["var(--acai)","var(--banana)","var(--pt2)"];
+  const maxL=Math.max(...porLocal.map(x=>x.venta));
+  const g=PROD[2], cg=costo[2];
+  const mLocal=margenUnit(2,0), mApp=margenUnit(2,1);
+  const perdida=sum(MERMA.map(m=>m.sobre));
+  const app=porCanal[1];
+  return `<div class="sh"><h2>Panel del dueño · últimos 30 días</h2>
+    <div class="seg" role="group" aria-label="Local"><button data-loc="-1" aria-pressed="${filLocal<0}">Ambos</button>${LOCALES.map((n,i)=>`<button data-loc="${i}" aria-pressed="${filLocal===i}">${n}</button>`).join("")}</div></div>
+  <div class="kpis">
+    <div class="kpi"><div class="v num">${mill(A.venta)}</div><div class="l">Ventas</div><div class="d">${A.n.toLocaleString("es-CL")} pedidos · ticket ${clp(A.ticket)}</div></div>
+    <div class="kpi"><div class="v num">${mill(A.cost)}</div><div class="l">Costo de insumos</div><div class="d">${pc(A.cost/A.venta)} de la venta</div></div>
+    <div class="kpi"><div class="v num bad">${mill(A.com)}</div><div class="l">Comisiones pagadas</div><div class="d">app de delivery y pasarela web</div></div>
+    <div class="kpi hi"><div class="v num">${mill(A.margen)}</div><div class="l">Margen de contribución</div><div class="d">${pc(A.margen/A.venta)} · antes de arriendo y sueldos</div></div>
+  </div>
+
+  <section class="g2">
+    <div><div class="sh"><h2>Ventas por canal</h2><span class="n">${filLocal<0?"ambos locales":LOCALES[filLocal]}</span></div>
+      <div class="card bd"><div class="stack">${porCanal.map((c,i)=>`<i style="width:${(c.venta/A.venta*100).toFixed(1)}%;background:${col[i]}"></i>`).join("")}</div>
+      <div class="leg">${porCanal.map((c,i)=>`<span style="--c:${col[i]}">${c.nom} ${pc(c.venta/A.venta)}</span>`).join("")}</div>
+      <div class="tw" style="margin-top:12px"><table><tr><th>Canal</th><th class="r">Ventas</th><th class="r">Comisión</th><th class="r">Margen</th></tr>
+      ${porCanal.map(c=>`<tr><td>${c.nom}</td><td class="r num">${mill(c.venta)}</td><td class="r num">${c.com?mill(c.com):"—"}</td><td class="r num"><b>${pc(c.venta?c.margen/c.venta:0)}</b></td></tr>`).join("")}</table></div></div></div>
+    <div><div class="sh"><h2>Ventas por local</h2></div>
+      <div class="card bd hb">${porLocal.map(x=>`<div class="hbr"><span>${x.nom}</span><div class="tr"><i style="width:${(x.venta/maxL*100).toFixed(1)}%;background:var(--acai)"></i></div><span class="v num">${mill(x.venta)}</span></div>`).join("")}
+      ${porLocal.map(x=>`<div class="small muted">${x.nom}: ${x.O.length.toLocaleString("es-CL")} pedidos · ticket ${clp(x.ticket)} · margen ${pc(x.margen/x.venta)}</div>`).join("")}</div></div>
+  </section>
+
+  <section><div class="sh"><h2>Cuánto deja un bowl grande</h2><span class="n">precio ${clp(g.precio)} · receta de ejemplo</span></div>
+    <div class="card bd">
+      <div class="stack">${[["Pulpa de açaí",cg.pulpa,"var(--acai)"],["Base (granola, fruta)",cg.base,"var(--acai2)"],["Toppings (promedio real)",cg.top,"var(--banana)"],["Envase",cg.envase,"var(--ink3)"],["Margen en el local",mLocal,"var(--ok)"]].map(x=>`<i title="${x[0]}" style="width:${(x[1]/g.precio*100).toFixed(1)}%;background:${x[2]}"></i>`).join("")}</div>
+      <div class="leg">${[["Pulpa",cg.pulpa,"var(--acai)"],["Base",cg.base,"var(--acai2)"],["Toppings",cg.top,"var(--banana)"],["Envase",cg.envase,"var(--ink3)"],["Margen",mLocal,"var(--ok)"]].map(x=>`<span style="--c:${x[2]}">${x[0]} ${clp(x[1])}</span>`).join("")}</div>
+      <div class="kpis" style="margin-top:14px">
+        <div class="kpi"><div class="v num good">${clp(mLocal)}</div><div class="l">Deja en el local</div><div class="d">${pc(mLocal/g.precio)} del precio</div></div>
+        <div class="kpi"><div class="v num bad">${clp(mApp)}</div><div class="l">Deja por la app de delivery</div><div class="d">${pc(mApp/g.precio)} · comisión ${pc(S.comisionApp)}</div></div>
+        <div class="kpi"><div class="v num">${clp(mLocal-mApp)}</div><div class="l">Diferencia por bowl</div><div class="d">× ${agg(o=>f(o)&&o.p===2&&o.c===1).n} grandes por la app al mes</div></div>
+      </div>
+      <div class="note">Los toppings se calculan con lo que realmente se pidió en cada venta, no con un promedio fijo.</div>
+    </div></section>
+
+  <section class="g2">
+    <div><div class="sh"><h2>Merma de fruta</h2><span class="n">meta ${pc(S.metaMerma)}</span></div>
+      <div class="card tw"><table><tr><th>Fruta</th><th class="r">Compra</th><th class="r">Merma</th><th class="r">Sobre la meta</th></tr>
+      ${MERMA.map(m=>`<tr><td>${m.f}</td><td class="r num">${m.compra} kg</td><td class="r"><span class="pill ${m.merma>S.metaMerma?"p-crit":"p-ok"}">${pc(m.merma)}</span></td><td class="r num">${m.sobre?clp(m.sobre):"—"}</td></tr>`).join("")}
+      <tr class="tot"><td colspan="3">Pérdida evitable del mes</td><td class="r num">${clp(perdida)}</td></tr></table></div></div>
+    <div><div class="sh"><h2>Alertas de hoy</h2><span class="n">el sistema avisa, tú decides</span></div>
+      <div class="card">
+        <div class="alert"><span class="dot" style="background:var(--crit)"></span><div><div class="t">Pulpa de açaí en La Portada: alcanza para 3 días</div><div class="m">Consumo promedio ${(sum(agg(o=>o.l===1).O.map(o=>PROD[o.p].pulpa))/30/1000).toFixed(1).replace(".",",")} kg diarios. Pedir hoy para no quebrar stock el fin de semana.</div></div></div>
+        <div class="alert"><span class="dot" style="background:var(--crit)"></span><div><div class="t">Merma de plátano en ${pc(MERMA[0].merma)} (meta ${pc(S.metaMerma)})</div><div class="m">Son ${clp(MERMA[0].sobre)} al mes que se pueden evitar comprando en dos entregas.</div></div></div>
+        <div class="alert"><span class="dot" style="background:var(--warn)"></span><div><div class="t">El bowl grande por la app deja ${clp(mApp)}</div><div class="m">${pc(mApp/g.precio)} del precio. Revisa el agente: propone un precio distinto para la app.</div></div></div>
+        <div class="alert"><span class="dot" style="background:var(--warn)"></span><div><div class="t">${pc(app.venta/A.venta)} de las ventas pasa por la app</div><div class="m">Pagaron ${mill(app.com)} en comisiones este mes. El pedido por WhatsApp puede llevarse una parte.</div></div></div>
+      </div></div>
+  </section>`;
+}
+
+// =================== AGENTE ===================
+function vAgente(){
+  const A=agg(()=>true);
+  const ventasProd=PROD.map((p,i)=>({p,n:A.O.filter(o=>o.p===i).length})).sort((a,b)=>b.n-a.n);
+  const maxP=ventasProd[0].n;
+  const pc2={}; A.O.forEach(o=>{for(let a=0;a<o.tp.length;a++)for(let b=a+1;b<o.tp.length;b++){const k=[o.tp[a],o.tp[b]].sort((x,y)=>x-y).join("-");pc2[k]=(pc2[k]||0)+1}});
+  const combos=Object.entries(pc2).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,n])=>({t:k.split("-").map(i=>TOPS[i][0]).join(" + "),n}));
+  const conTop=A.O.filter(o=>o.tp.length).length;
+  const M=DIAS.map(()=>HORAS.map(()=>0)); A.O.forEach(o=>{M[o.dow][HORAS.indexOf(o.h)]++});
+  const maxH=Math.max(...M.flat());
+  const avgMar16=(M[1][6]+M[1][7])/2, avgAll16=(sum(M.map(r=>r[6]+r[7]))/14);
+  const gApp=agg(o=>o.p===2&&o.c===1).n, mApp=margenUnit(2,1);
+  const recs=[
+    {id:"combo",t:`Bowl de la casa: ${combos[0].t}`,why:`${combos[0].n} pedidos del mes combinaron ${combos[0].t.toLowerCase()} (${pc(combos[0].n/conTop)} de los bowls con toppings).`,imp:"Un bowl fijo acelera la fila en hora punta y deja la receta medida por gramos."},
+    {id:"martes",t:"Martes de 16:00 a 18:00: 2x1 en smoothies",why:`Esa franja vende ${pc(1-avgMar16/avgAll16)} menos que el mismo horario del resto de la semana.`,imp:"Llena horas muertas con el producto de menor costo."},
+    {id:"precio",t:"Bowl grande en la app a "+clp(PROD[2].precio+900),why:`Hoy deja ${clp(mApp)} por venta en la app. Se vendieron ${gApp} este mes por ese canal.`,imp:`Recupera ${clp(900*(1-S.comisionApp)*gApp)} al mes sin tocar el precio del local.`},
+    {id:"stock",t:"Pedir pulpa para La Portada hoy",why:"Al ritmo actual el stock alcanza para 3 días y viene fin de semana, el peak de ventas.",imp:"Evita perder las ventas del sábado."}
+  ];
+  const heatColor=v=>{const t=v/maxH;return `color-mix(in srgb, var(--acai) ${Math.round(8+t*92)}%, var(--surface2))`};
+  return `<div class="sh"><h2>Agente de consumo</h2><span class="n">lee cada venta · propone · tú apruebas</span></div>
+  <div class="card"><div class="bd" style="border-bottom:1px solid var(--line)"><div class="small muted">Esta semana el agente propone</div></div>
+  ${recs.map(r=>{const s=recState[r.id];return `<div class="rec ${s==="ok"?"ok":s==="no"?"no":""}"><div class="t">${esc(r.t)}</div><div class="why">${esc(r.why)}</div><div class="imp"><b>Efecto esperado:</b> ${esc(r.imp)}</div>
+    <div class="acts">${s?`<span class="pill ${s==="ok"?"p-ok":"p-warn"}">${s==="ok"?"Aprobado":"Descartado"}</span><button class="btn sm" data-rec="${r.id}" data-v="">Deshacer</button>`:`<button class="btn sm acai" data-rec="${r.id}" data-v="ok">Aprobar</button><button class="btn sm" data-rec="${r.id}" data-v="no">Descartar</button>`}</div></div>`}).join("")}
+  </div>
+
+  <section class="g2">
+    <div><div class="sh"><h2>Lo más vendido</h2><span class="n">unidades del mes</span></div>
+      <div class="card bd hb">${ventasProd.map(x=>`<div class="hbr"><span>${esc(x.p.nombre)}</span><div class="tr"><i style="width:${(x.n/maxP*100).toFixed(1)}%;background:var(--acai)"></i></div><span class="v num">${x.n.toLocaleString("es-CL")}</span></div>`).join("")}</div></div>
+    <div><div class="sh"><h2>Toppings que se piden juntos</h2><span class="n">pares más frecuentes</span></div>
+      <div class="card tw"><table><tr><th>Combinación</th><th class="r">Pedidos</th></tr>${combos.map(c=>`<tr><td>${esc(c.t)}</td><td class="r num">${c.n}</td></tr>`).join("")}</table></div></div>
+  </section>
+
+  <section><div class="sh"><h2>Cuándo se vende</h2><span class="n">pedidos por día y hora · ambos locales</span></div>
+    <div class="card bd"><div class="tw"><div class="heat" style="min-width:420px">
+      <span></span>${HORAS.map(h=>`<span class="h">${h}</span>`).join("")}
+      ${DIAS.map((d,i)=>`<span class="d">${d}</span>${M[i].map((v,j)=>`<span class="c" title="${d} ${HORAS[j]}:00 · ${v} pedidos" style="background:${heatColor(v)}"></span>`).join("")}`).join("")}
+    </div></div><div class="note">Más oscuro = más pedidos. El peak está en almuerzo y a la salida del trabajo, y el fin de semana vende más.</div></div></section>
+
+  <section><div class="sh"><h2>Pregúntale al agente</h2><span class="n">respuestas calculadas con los datos</span></div>
+    <div class="card bd"><div class="ask">${QA().map((q,i)=>`<button class="chip" data-q="${i}" aria-pressed="false">${esc(q.q)}</button>`).join("")}</div>
+    <div class="answer" id="ans"><div class="who">Agente Guzza</div>Elige una pregunta.</div></div></section>`;
+}
+function QA(){
+  const A=agg(()=>true), L=LOCALES.map((n,i)=>agg(o=>o.l===i));
+  const app=agg(o=>o.c===1);
+  const g=PROD.map((p,i)=>({p,m:margenUnit(i,0)/p.precio})).sort((a,b)=>b.m-a.m);
+  const sab=agg(o=>o.dow===5), mar=agg(o=>o.dow===1);
+  return [
+    {q:"¿Qué producto deja más margen?",a:`En el local, el ${g[0].p.nombre.toLowerCase()} deja ${pc(g[0].m)} de su precio. El que menos deja es el ${g[g.length-1].p.nombre.toLowerCase()} (${pc(g[g.length-1].m)}), porque lleva más pulpa por peso.`},
+    {q:"¿Cuánto pagamos a la app este mes?",a:`${clp(app.com)} en comisiones, sobre ${mill(app.venta)} vendidos por la app. Si un 20 % de esos pedidos se pasara a WhatsApp con retiro, quedarían ${clp(app.com*.2)} más al mes.`},
+    {q:"¿Qué local rinde mejor?",a:`${LOCALES[L[1].venta>L[0].venta?1:0]} vende más (${mill(Math.max(L[0].venta,L[1].venta))}). Margen: Llacolen ${pc(L[0].margen/L[0].venta)}, La Portada ${pc(L[1].margen/L[1].venta)}. Llacolen depende más de la app, por eso deja menos por peso vendido.`},
+    {q:"¿Cuál es el mejor y el peor día?",a:`El sábado es el día fuerte (${clp(sab.venta/Math.ceil(30/7))} promedio por sábado). El martes es el más bajo (${clp(mar.venta/Math.ceil(30/7))}). Por eso el agente propone una promoción el martes en la tarde.`}
+  ];
+}
+
+// =================== WHATSAPP ===================
+let WA={msgs:[],step:"inicio",local:null,size:null,tops:[],hora:null,code:null,sent:false};
+function hora(){const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+function waReset(){WA={msgs:[],step:"inicio",local:null,size:null,tops:[],hora:null,code:null,sent:false};waBot("Hola, soy el asistente de Guzza.\n¿Qué quieres hacer?")}
+function waBot(t){WA.msgs.push({me:false,t,h:hora()})}
+function waMe(t){WA.msgs.push({me:true,t,h:hora()})}
+function waOpts(){
+  const s=WA.step;
+  if(s==="inicio") return `<div class="opts"><button data-wa="pedir">Pedir para retirar</button><button data-wa="carta">Ver la carta</button><button data-wa="horario">Locales y horarios</button></div>`;
+  if(s==="local") return `<div class="opts">${LOCALES.map((l,i)=>`<button data-wa="loc:${i}">${l}</button>`).join("")}</div>`;
+  if(s==="size") return `<div class="opts">${PROD.slice(0,3).map((p,i)=>`<button data-wa="size:${i}">${p.nombre} · ${clp(p.precio)}</button>`).join("")}</div>`;
+  if(s==="tops"){const max=PROD[WA.size].top;return `<div class="opts"><div class="row">${TOPS.slice(0,10).map((t,i)=>`<button class="${WA.tops.includes(i)?"on":""}" data-wa="top:${i}">${t[0]}</button>`).join("")}</div><button data-wa="topsok" ${WA.tops.length?"":"disabled style='opacity:.5'"}>Listo (${WA.tops.length}/${max})</button></div>`}
+  if(s==="hora") return `<div class="opts"><button data-wa="h:Lo antes posible">Lo antes posible</button><button data-wa="h:En 30 minutos">En 30 minutos</button><button data-wa="h:En 1 hora">En 1 hora</button></div>`;
+  if(s==="pago") return `<div class="opts"><button data-wa="pagar">Pagar con link</button><button data-wa="cambiar">Cambiar el pedido</button></div>`;
+  if(s==="fin") return `<div class="opts"><button data-wa="reset">Hacer otro pedido</button></div>`;
+  return "";
+}
+function waAct(a){
+  if(a==="reset"){waReset();return}
+  if(a==="pedir"){waMe("Pedir para retirar");waBot("¿En qué local lo retiras?");WA.step="local"}
+  else if(a==="carta"){waMe("Ver la carta");waBot(PROD.map(p=>`${p.nombre}: ${clp(p.precio)}`).join("\n"));WA.step="inicio"}
+  else if(a==="horario"){waMe("Locales y horarios");waBot("Llacolen: todos los días 9:30 a 20:30\nMall La Portada: todos los días 10:00 a 20:30");WA.step="inicio"}
+  else if(a.startsWith("loc:")){WA.local=+a.slice(4);waMe(LOCALES[WA.local]);waBot("¿Qué tamaño quieres?");WA.step="size"}
+  else if(a.startsWith("size:")){WA.size=+a.slice(5);WA.tops=[];waMe(PROD[WA.size].nombre);waBot(`Elige hasta ${PROD[WA.size].top} toppings incluidos.`);WA.step="tops"}
+  else if(a.startsWith("top:")){const i=+a.slice(4),max=PROD[WA.size].top;if(WA.tops.includes(i))WA.tops=WA.tops.filter(x=>x!==i);else if(WA.tops.length<max)WA.tops.push(i);renderWA();return}
+  else if(a==="topsok"){waMe(WA.tops.map(i=>TOPS[i][0]).join(", "));waBot("¿Para cuándo lo quieres?");WA.step="hora"}
+  else if(a.startsWith("h:")){WA.hora=a.slice(2);waMe(WA.hora);const p=PROD[WA.size];waBot(`Tu pedido:\n${p.nombre}\n${WA.tops.map(i=>TOPS[i][0]).join(", ")}\nRetiro en ${LOCALES[WA.local]} · ${WA.hora.toLowerCase()}\nTotal: ${clp(p.precio)}`);WA.step="pago"}
+  else if(a==="cambiar"){waMe("Cambiar el pedido");waBot("¿Qué tamaño quieres?");WA.step="size"}
+  else if(a==="pagar"){waMe("Pagar con link");WA.code="G-"+(1400+Math.floor(Math.random()*90));waBot(`Pago recibido.\nPedido ${WA.code} enviado a ${LOCALES[WA.local]}.\nTe avisamos cuando esté listo.`);WA.step="fin";WA.sent=true}
+  renderWA();
+}
+function renderWA(){
+  const c=$("#chat"); if(!c) return;
+  c.innerHTML=WA.msgs.map(m=>`<div class="msg ${m.me?"me":"them"}">${esc(m.t)}<span class="tm">${m.h}</span></div>`).join("")+waOpts();
+  c.querySelectorAll("[data-wa]").forEach(b=>b.onclick=()=>waAct(b.dataset.wa));
+  c.scrollTop=c.scrollHeight;
+  const t=$("#ticket"); if(t) t.innerHTML=ticketHtml();
+}
+function ticketHtml(){
+  if(!WA.sent) return `<div class="muted">Cuando el cliente paga, el pedido aparece aquí en la pantalla del local, con su código y hora de retiro.</div>`;
+  const p=PROD[WA.size];
+  return `<div class="small muted">Nuevo pedido · WhatsApp · pagado</div><div class="code">${esc(WA.code)}</div><div><b>${esc(LOCALES[WA.local])}</b> · retiro ${esc(WA.hora.toLowerCase())}</div><ul><li>${esc(p.nombre)}</li>${WA.tops.map(i=>`<li>${esc(TOPS[i][0])}</li>`).join("")}</ul><div style="margin-top:8px"><b>${clp(p.precio)}</b> <span class="pill p-ok">sin comisión de app</span></div><div class="note">Deja ${clp(margenUnit(WA.size,2))} de margen, contra ${clp(margenUnit(WA.size,1))} si el mismo bowl entrara por la app.</div>`;
+}
+function vWA(){
+  return `<div class="sh"><h2>Asistente WhatsApp</h2><span class="n">pruébalo: toca las opciones</span></div>
+  <div class="wa-grid">
+    <div class="phone"><div class="hd"><div class="av">G</div><div><b>Guzza</b><small>asistente de pedidos</small></div></div><div class="chat" id="chat"></div></div>
+    <div style="display:grid;gap:16px">
+      <div><div class="sh"><h2>Así llega al local</h2></div><div class="ticket" id="ticket"></div></div>
+      <div class="card bd"><div class="sh" style="margin-bottom:8px"><h2>Cómo funciona</h2></div><div class="steps">
+        <div class="step"><b>1</b><div>El cliente escribe al WhatsApp de Guzza, desde Instagram o un código QR en el local.</div></div>
+        <div class="step"><b>2</b><div>Arma su bowl con botones: local, tamaño, toppings y hora de retiro.</div></div>
+        <div class="step"><b>3</b><div>Paga con un link y el pedido entra al panel del local, ya pagado.</div></div>
+        <div class="step"><b>4</b><div>Cada pedido alimenta al agente de consumo y al panel del dueño.</div></div>
+      </div></div>
+      <div class="note">En la versión real funciona con la API oficial de WhatsApp Business y un medio de pago chileno. Los mensajes van cortos y con botones, como en esta demostración.</div>
+    </div>
+  </div>`;
+}
+
+// =================== PROPUESTA ===================
+function vPropuesta(){
+  return `<div class="sh"><h2>Cómo lo hacemos realidad</h2><span class="n">de sus datos reales a un sistema funcionando</span></div>
+  <div class="etapas">
+    <div class="etapa"><div class="n">Etapa 1</div><h3>Diagnóstico</h3><span class="dur">1 semana</span><ul><li>Levantamos ventas por local y canal</li><li>Medimos recetas y gramajes reales</li><li>Calculamos costo y margen de cada producto</li></ul><div class="ent"><b>Entregable:</b> informe de costo por bowl y margen por canal con sus números.</div></div>
+    <div class="etapa"><div class="n">Etapa 2</div><h3>Piloto</h3><span class="dur">3 a 4 semanas · un local</span><ul><li>Panel del dueño con sus datos</li><li>Agente de consumo con propuestas semanales</li><li>Alertas de stock y merma</li></ul><div class="ent"><b>Entregable:</b> sistema funcionando en un local y resultados medidos.</div></div>
+    <div class="etapa"><div class="n">Etapa 3</div><h3>Implementación</h3><span class="dur">ambos locales</span><ul><li>Asistente WhatsApp con pago en línea</li><li>Panel para los dos locales</li><li>Modelo listo para replicar en franquicias</li></ul><div class="ent"><b>Entregable:</b> sistema completo, capacitación y soporte mensual.</div></div>
+  </div>
+  <section><div class="sh"><h2>Para empezar necesitamos</h2></div><div class="card bd steps">
+    <div class="step"><b>1</b><div>Las ventas de un mes, por local y por canal (exportación de la caja y reporte de la app de delivery).</div></div>
+    <div class="step"><b>2</b><div>Las recetas y gramajes de cada tamaño, y la lista de toppings.</div></div>
+    <div class="step"><b>3</b><div>Las facturas de compra de pulpa y fruta del último mes.</div></div>
+    <div class="step"><b>4</b><div>Una persona de contacto en cada local.</div></div>
+  </div></section>
+  <section><div class="pt-card">
+    <div class="wm">PERROT <span>TECH</span></div>
+    <p>Soluciones estratégicas con agentes de inteligencia artificial y sistemas a medida para empresas que quieren decidir con sus propios datos.</p>
+    <div class="ct"><div><b>Contacto</b>Eduardo Perrot</div><div><b>Correo</b>perrot.br@gmail.com</div><div><b>Teléfono</b>+56 9 3017 3701</div></div>
+  </div></section>
+  <footer>Prototipo con datos de ejemplo. Las cifras reales se calculan en el diagnóstico con la información de Guzza.</footer>`;
+}
+
+// =================== RENDER ===================
+function render(){
+  nav();
+  const v=$("#view");
+  v.innerHTML= tab==="panel"?vPanel(): tab==="agente"?vAgente(): tab==="whatsapp"?vWA(): tab==="propuesta"?vPropuesta(): vInicio();
+  v.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+  v.querySelectorAll("[data-loc]").forEach(b=>b.onclick=()=>{filLocal=+b.dataset.loc;render()});
+  v.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>{recState[b.dataset.rec]=b.dataset.v||undefined;const y=window.scrollY;render();window.scrollTo({top:y})});
+  const qa=QA();
+  v.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{v.querySelectorAll("[data-q]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");$("#ans").innerHTML=`<div class="who">Agente Guzza</div>${esc(qa[+b.dataset.q].a)}`});
+  if(tab==="whatsapp"){ if(!WA.msgs.length) waReset(); renderWA(); }
+}
+render();
+</script>
+</body>
+</html>
