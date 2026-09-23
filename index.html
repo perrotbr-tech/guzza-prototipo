@@ -4,130 +4,136 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Guzza · Perrot Tech</title>
-<meta name="description" content="Prototipo Perrot Tech para Guzza: panel del dueño, agente de consumo y asistente WhatsApp.">
+<meta name="description" content="Prototipo Perrot Tech para Guzza: control financiero, clientes e inventario con agentes de IA.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 :root{
   --bg:#F6F4F9; --surface:#FFFFFF; --surface2:#F1ECF7; --line:#E3DCEC; --line2:#CFC4DE;
   --ink:#1E1430; --ink2:#5E5470; --ink3:#8E859E;
-  --acai:#4A2170; --acai2:#7B45A6; --acai-soft:#EDE3F6; --brand:#4A2170;
+  --acai:#4A2170; --acai2:#7B45A6; --acai-soft:#EDE3F6; --brand:#4A2170; --brand2:#2E1147;
   --pt:#1E5BFF; --pt2:#3DD9C0;
   --banana:#F2C94C; --banana-soft:#FFF6D8;
   --ok:#1F9D6B; --ok-bg:#E3F5EC; --warn:#B86E00; --warn-bg:#FFF2DB; --crit:#C7362B; --crit-bg:#FBE5E2;
-  --wa:#0B7A5E; --wa-bg:#E9E3DA; --wa-me:#D9FDD3; --wa-them:#FFFFFF;
-  --shadow:0 1px 2px rgba(30,20,48,.06),0 6px 20px rgba(30,20,48,.06);
+  --wa:#0B7A5E; --wa-bg:#EFE7DE; --wa-me:#D9FDD3; --wa-them:#FFFFFF; --wa-head:#075E54;
+  --ig1:#F58529; --ig2:#DD2A7B; --ig3:#8134AF; --ig4:#515BD4; --ig-me:#3797F0; --ig-them:#EFEFEF;
+  --g-star:#F4B400;
+  --ic-fin:#1E5BFF; --ic-cli:#DD2A7B; --ic-inv:#0E8C7A; --ic-fra:#D9822B;
+  --shadow:0 1px 2px rgba(30,20,48,.06),0 8px 24px rgba(30,20,48,.07);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root{
     --bg:#120C1B; --surface:#1B1328; --surface2:#241A35; --line:#2F2442; --line2:#40325A;
     --ink:#EFE9F7; --ink2:#B5AAC7; --ink3:#857A99;
-    --acai:#B98BE0; --acai2:#9C6BC9; --acai-soft:#2C1F40; --brand:#3A1A5A;
-    --pt:#6C93FF; --pt2:#3DD9C0;
-    --banana:#F2C94C; --banana-soft:#3A3014;
+    --acai:#C29BE6; --acai2:#9C6BC9; --acai-soft:#2C1F40; --brand:#3A1A5A; --brand2:#240E38;
+    --pt:#6C93FF;
+    --banana-soft:#3A3014;
     --ok:#3DC98B; --ok-bg:#12352A; --warn:#F0A83A; --warn-bg:#3A2C10; --crit:#F0655A; --crit-bg:#3E1A17;
-    --wa:#3DC9A0; --wa-bg:#0E1512; --wa-me:#144D37; --wa-them:#1F2C33;
+    --wa:#3DC9A0; --wa-bg:#0E1512; --wa-me:#144D37; --wa-them:#1F2C33; --wa-head:#1F2C33;
+    --ig-them:#262626;
     --shadow:none;
     color-scheme:dark;
   }
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:Montserrat,system-ui,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.01em}
 button{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--pt);outline-offset:2px}
 .num{font-variant-numeric:tabular-nums}
-.wrap{max-width:1040px;margin:0 auto;padding-inline:16px}
+.wrap{max-width:1060px;margin:0 auto;padding-inline:16px}
+[hidden]{display:none!important}
 
 /* barra */
-.top{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;padding-top:env(safe-area-inset-top,0px)}
-.top .wrap{display:flex;align-items:center;gap:12px;min-height:56px}
-.top .cl{font:800 18px Montserrat,sans-serif;letter-spacing:.02em}
+.top{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding-top:env(safe-area-inset-top,0px)}
+.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+.top .cl{font:800 19px Montserrat,sans-serif;letter-spacing:.02em}
 .top .cl small{display:block;font:600 10px Montserrat,sans-serif;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
-.top .by{margin-left:auto;display:flex;align-items:center;gap:8px;font:800 11px Montserrat,sans-serif;letter-spacing:.08em;opacity:.95}
+.top .by{margin-left:auto;display:flex;align-items:center;gap:8px;font:800 11px Montserrat,sans-serif;letter-spacing:.08em}
 .top .by span{color:var(--pt2)}
+.back{appearance:none;border:0;background:rgba(255,255,255,.1);color:#fff;border-radius:10px;padding:8px 12px 8px 8px;display:flex;align-items:center;gap:6px;font:700 13px Montserrat,sans-serif;cursor:pointer}
+.back svg{width:18px;height:18px}
+.top .ttl{font:800 16px Montserrat,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .demo{background:var(--banana);color:#3A2A00;font:600 12px "IBM Plex Sans",sans-serif;text-align:center;padding:5px 12px}
+.chips{position:sticky;top:calc(58px + env(safe-area-inset-top,0px));z-index:15;background:var(--bg);border-bottom:1px solid var(--line)}
+.chips .in{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;max-width:1060px;margin:0 auto;scrollbar-width:none}
+.chips .in::-webkit-scrollbar{display:none}
+.chip{appearance:none;border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:7px 13px;font:600 12px Montserrat,sans-serif;cursor:pointer;color:var(--ink2);white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
 
-/* navegación */
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-nav.tabs .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
-nav.tabs button{appearance:none;border:0;background:none;padding:9px 2px 8px;display:grid;justify-items:center;gap:3px;font:600 11px Montserrat,sans-serif;color:var(--ink3);cursor:pointer}
-nav.tabs button svg{width:22px;height:22px}
-nav.tabs button[aria-selected="true"]{color:var(--acai)}
-@media (min-width:900px){
-  body{padding-bottom:40px}
-  nav.tabs{position:sticky;top:56px;bottom:auto;border-top:0;border-bottom:1px solid var(--line)}
-  nav.tabs .in{max-width:1040px;display:flex;gap:4px;padding-inline:16px}
-  nav.tabs button{grid-auto-flow:column;gap:8px;padding:12px 14px;font-size:13px;border-bottom:3px solid transparent}
-  nav.tabs button[aria-selected="true"]{border-bottom-color:var(--acai)}
-  nav.tabs button svg{width:18px;height:18px}
-}
-
-main{padding-block:22px 30px}
-section{margin-top:26px}
+main{padding-block:22px 48px}
+section{margin-top:30px;scroll-margin-top:130px}
 .sh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.sh h2{font-size:17px;font-weight:800}
+.sh h2{font-size:18px;font-weight:800}
 .sh .n{font-size:12px;color:var(--ink3)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.lead{color:var(--ink2);margin:-6px 0 14px;max-width:70ch;font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
 .bd{padding:16px}
-.muted{color:var(--ink3)}
-.small{font-size:12px}
+.muted{color:var(--ink3)} .small{font-size:12px}
 .note{font-size:12px;color:var(--ink3);margin-top:10px}
 .g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
-@media (max-width:760px){.g2{grid-template-columns:minmax(0,1fr)}}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:820px){.g2,.g3{grid-template-columns:minmax(0,1fr)}}
+.btn{appearance:none;border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font:700 13px Montserrat,sans-serif;cursor:pointer}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.ban{background:var(--banana);border-color:var(--banana);color:#2B1F00}
+.btn.sm{padding:6px 10px;font-size:12px}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font:600 11px Montserrat,sans-serif;white-space:nowrap}
+.p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)} .p-crit{background:var(--crit-bg);color:var(--crit)} .p-acai{background:var(--acai-soft);color:var(--acai)}
 
-/* portada */
-.hero{background:var(--brand);color:#fff;border-radius:20px;padding:26px 22px;position:relative;overflow:hidden}
+/* inicio */
+.hero{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-radius:22px;padding:28px 22px;position:relative;overflow:hidden}
 .hero .ey{font:600 11px Montserrat,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--banana)}
-.hero h1{font-size:clamp(26px,5vw,40px);font-weight:800;margin-top:8px;line-height:1.1;max-width:18ch}
-.hero p{margin:12px 0 0;max-width:52ch;color:rgba(255,255,255,.86)}
-.hero .berries{position:absolute;right:-30px;bottom:-40px;width:200px;height:200px;opacity:.9}
-.hero .cta{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
-.btn{appearance:none;border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 14px;font:700 13px Montserrat,sans-serif;cursor:pointer}
-.btn.pri{background:var(--banana);border-color:var(--banana);color:#2B1F00}
-.btn.acai{background:var(--brand);border-color:var(--brand);color:#fff}
-.btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
-.btn.sm{padding:7px 10px;font-size:12px}
-.mods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-@media (max-width:760px){.mods{grid-template-columns:minmax(0,1fr)}}
-.mod{appearance:none;text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;box-shadow:var(--shadow)}
-.mod:hover{border-color:var(--acai2)}
-.mod .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--acai-soft);color:var(--acai)}
-.mod .ic svg{width:24px;height:24px}
-.mod h3{font-size:16px;font-weight:800}
-.mod p{margin:0;color:var(--ink2);font-size:14px}
-.mod .q{font-size:12px;color:var(--acai);font-weight:600}
-.dolores{display:grid;gap:10px}
-.dolor{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
-.dolor b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--banana-soft);color:var(--warn);font:800 13px Montserrat,sans-serif}
+.hero h1{font-size:clamp(26px,5vw,42px);font-weight:800;margin-top:10px;line-height:1.08;max-width:17ch}
+.hero p{margin:12px 0 0;max-width:54ch;color:rgba(255,255,255,.86)}
+.hero .berries{position:absolute;right:-30px;bottom:-40px;width:210px;height:210px}
+.hero>*:not(.berries){position:relative;z-index:1}
+@media(max-width:640px){.hero{padding-bottom:120px}.hero .berries{width:150px;height:150px;right:-20px;bottom:-30px}}
+.apps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:820px){.apps{grid-template-columns:minmax(0,1fr)}}
+.app{appearance:none;text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;display:grid;gap:12px;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.app:hover{transform:translateY(-2px);border-color:var(--acai2)}
+.app .ic{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;color:#fff}
+.app .ic svg{width:32px;height:32px}
+.app h3{font-size:19px;font-weight:800}
+.app p{margin:0;color:var(--ink2);font-size:14px}
+.app ul{margin:0;padding-left:18px;color:var(--ink2);font-size:13px;display:grid;gap:3px}
+.app .go{font:700 13px Montserrat,sans-serif;color:var(--acai)}
+.steps{display:grid;gap:12px}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;font-size:14px}
+.step b.n{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--acai-soft);color:var(--acai);font:800 14px Montserrat,sans-serif}
+.vision{background:#0F1C2E;color:#EAF0FF;border-radius:18px;padding:22px;display:grid;gap:10px}
+.vision .ey{font:600 11px Montserrat,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--pt2)}
+.vision h3{font-size:20px}
+.vision p{margin:0;color:#B9C4D8;max-width:66ch}
+.pt-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
+.pt-card .wm{font:800 16px Montserrat,sans-serif;letter-spacing:.08em;color:var(--ink)}
+.pt-card .wm span{color:var(--pt)}
+.pt-card .ct{display:flex;flex-wrap:wrap;gap:6px 24px;font-size:14px}
+.pt-card .ct b{display:block;font:600 10px Montserrat,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
 
-/* kpis */
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:3px;min-height:96px;box-shadow:var(--shadow)}
-.kpi .v{font:800 23px/1.1 Montserrat,sans-serif;letter-spacing:-.02em}
+/* kpis y gráficos */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:3px;min-height:98px;box-shadow:var(--shadow)}
+.kpi .v{font:800 24px/1.1 Montserrat,sans-serif;letter-spacing:-.02em}
 .kpi .v small{font-size:13px;color:var(--ink2);font-weight:600;margin-left:2px}
 .kpi .l{font-size:12px;color:var(--ink2)}
 .kpi .d{font-size:11px;color:var(--ink3);margin-top:auto}
 .kpi.hi{border-color:var(--acai2)} .kpi.hi .v{color:var(--acai)}
-.kpi .v.bad{color:var(--crit)} .kpi .v.good{color:var(--ok)}
-
-/* selector */
+.v.bad{color:var(--crit)} .v.good{color:var(--ok)}
 .seg{display:inline-flex;border:1px solid var(--line2);border-radius:10px;overflow:hidden;background:var(--surface)}
 .seg button{appearance:none;border:0;background:none;padding:8px 12px;font:600 12px Montserrat,sans-serif;cursor:pointer;color:var(--ink2)}
 .seg button[aria-pressed="true"]{background:var(--brand);color:#fff}
-
-/* tablas y barras */
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;font:600 10px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
 td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
 tr:last-child td{border-bottom:0}
 td.r,th.r{text-align:right;white-space:nowrap}
-tr.tot td{font-weight:700;border-top:2px solid var(--line)}
 .hb{display:grid;gap:12px}
-.hbr{display:grid;grid-template-columns:minmax(90px,130px) 1fr auto;gap:10px;align-items:center;font-size:13px}
+.hbr{display:grid;grid-template-columns:minmax(90px,140px) 1fr auto;gap:10px;align-items:center;font-size:13px}
 .hbr .tr{height:12px;background:var(--surface2);border-radius:6px;overflow:hidden;display:flex}
 .hbr .tr i{display:block;height:100%}
 .hbr .v{font-weight:600;white-space:nowrap}
@@ -135,350 +141,555 @@ tr.tot td{font-weight:700;border-top:2px solid var(--line)}
 .stack i{display:block;height:100%}
 .leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink2)}
 .leg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--c)}
-.pill{display:inline-block;padding:2px 9px;border-radius:999px;font:600 11px Montserrat,sans-serif;white-space:nowrap}
-.p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)} .p-crit{background:var(--crit-bg);color:var(--crit)} .p-acai{background:var(--acai-soft);color:var(--acai)}
-.alert{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.days{display:flex;align-items:flex-end;gap:3px;height:120px;padding:10px 0 0}
+.days i{flex:1;border-radius:4px 4px 0 0;background:var(--acai2);min-width:4px;opacity:.85}
+.days i.we{background:var(--acai)}
+.alert{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);align-items:start}
 .alert:last-child{border-bottom:0}
 .alert .dot{width:10px;height:10px;border-radius:50%;margin-top:6px}
 .alert .t{font-weight:600}
 .alert .m{font-size:13px;color:var(--ink2);margin-top:2px}
-
-/* heatmap */
-.heat{display:grid;grid-template-columns:34px repeat(12,minmax(0,1fr));gap:3px;font-size:10px;color:var(--ink3)}
-.heat .c{aspect-ratio:1/1;border-radius:4px;max-width:100%}
+.ask{display:flex;flex-wrap:wrap;gap:8px}
+.answer{margin-top:12px;background:var(--acai-soft);border-radius:12px;padding:14px;font-size:14px;min-height:60px}
+.answer .who{font:700 11px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--acai);margin-bottom:4px}
+.heat{display:grid;grid-template-columns:34px repeat(12,minmax(0,1fr));gap:3px;font-size:10px;color:var(--ink3);min-width:420px}
+.heat .c{aspect-ratio:1/1;border-radius:4px}
 .heat .h{text-align:center}
 .heat .d{display:flex;align-items:center}
 
-/* agente */
+/* teléfonos */
+.phone{border-radius:34px;border:9px solid #17111F;overflow:hidden;max-width:360px;width:100%;margin:0 auto;box-shadow:0 20px 40px rgba(20,10,40,.18);background:#fff}
+.phone .notch{height:22px;background:#17111F;display:flex;justify-content:center}
+.phone .notch i{width:90px;height:16px;background:#000;border-radius:0 0 12px 12px}
+.demo-grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.demo-grid{grid-template-columns:minmax(0,1fr)}}
+.side{display:grid;gap:14px}
+.flow{display:grid;gap:8px}
+.flow .fi{display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:14px;align-items:start}
+.flow .fi b{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--acai-soft);color:var(--acai);font:800 12px Montserrat,sans-serif}
+.flow .fi.on b{background:var(--brand);color:#fff}
+.agentnote{background:var(--surface);border:1px dashed var(--line2);border-radius:14px;padding:14px;font-size:13px;color:var(--ink2)}
+.agentnote b{color:var(--ink)}
+
+/* Instagram */
+.ig{background:#fff;color:#111;font-size:14px}
+.ig .hd{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #eee}
+.ig .av{width:32px;height:32px;border-radius:50%;padding:2px;background:linear-gradient(45deg,var(--ig1),var(--ig2),var(--ig3));flex:none}
+.ig .av i{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:#4A2170;border:2px solid #fff;color:#fff;font:800 12px Montserrat,sans-serif;font-style:normal}
+.ig .hd b{font-size:14px} .ig .hd small{display:block;font-size:11px;color:#777}
+.ig .post{aspect-ratio:1/1;background:radial-gradient(circle at 60% 55%,#7B45A6 0 28%,transparent 29%),radial-gradient(circle at 35% 40%,#F2C94C 0 9%,transparent 10%),radial-gradient(circle at 70% 30%,#E0405A 0 8%,transparent 9%),radial-gradient(circle at 45% 70%,#fff 0 7%,transparent 8%),linear-gradient(160deg,#EADCF7,#CDB4E8);position:relative}
+.ig .post span{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,.55);color:#fff;font:700 12px Montserrat,sans-serif;padding:4px 8px;border-radius:6px}
+.ig .acts{display:flex;gap:14px;padding:8px 12px;font-size:20px}
+.ig .acts svg{width:22px;height:22px}
+.ig .cm{padding:0 12px 10px;display:grid;gap:6px;font-size:13px}
+.ig .cm .c{display:flex;gap:6px;align-items:baseline}
+.ig .cm .c b{font-weight:700}
+.ig .cm .rep{margin-left:18px;color:#555;font-size:12px}
+.ig .cm button{appearance:none;border:1px solid #ddd;background:#fafafa;border-radius:999px;padding:6px 10px;font:600 12px "IBM Plex Sans",sans-serif;cursor:pointer;justify-self:start;color:#111}
+.igdm{background:#fff;color:#111;height:520px;display:flex;flex-direction:column}
+.igdm .msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.igdm .m{max-width:80%;padding:8px 12px;border-radius:18px;font-size:14px;line-height:1.35;white-space:pre-line}
+.igdm .m.them{background:#EFEFEF;align-self:flex-start;color:#111}
+.igdm .m.me{background:var(--ig-me);align-self:flex-end;color:#fff}
+.igdm .sys{align-self:center;font-size:11px;color:#888;margin:4px 0}
+.carousel{display:flex;gap:8px;overflow-x:auto;padding:4px 0 6px;align-self:stretch;scrollbar-width:none}
+.carousel::-webkit-scrollbar{display:none}
+.pcard{flex:0 0 150px;border:1px solid #e5e5e5;border-radius:14px;overflow:hidden;background:#fff}
+.pcard .img{height:96px;display:grid;place-items:center}
+.pcard .tx{padding:8px 10px;font-size:12px;color:#111}
+.pcard .tx b{display:block;font-size:13px}
+.pcard button{appearance:none;width:100%;border:0;border-top:1px solid #eee;background:#fff;padding:8px;font:600 12px "IBM Plex Sans",sans-serif;color:#0095F6;cursor:pointer}
+.qr-row{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-end;justify-content:flex-end}
+.qr-row button{appearance:none;border:1px solid #0095F6;background:#fff;color:#0095F6;border-radius:999px;padding:6px 12px;font:600 12px "IBM Plex Sans",sans-serif;cursor:pointer}
+.bowl{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 50% 45%,#5B2A86 0 55%,transparent 56%);position:relative}
+.bowl::after{content:"";position:absolute;left:4px;right:4px;bottom:2px;height:30px;border-radius:0 0 34px 34px;background:#F4EFE6;border-top:3px solid #E8DCC8}
+
+/* WhatsApp */
+.wa{background:var(--wa-bg);display:flex;flex-direction:column;height:560px}
+.wa .hd{background:var(--wa-head);color:#fff;display:flex;align-items:center;gap:10px;padding:10px 12px}
+.wa .av{width:34px;height:34px;border-radius:50%;background:#4A2170;display:grid;place-items:center;font:800 13px Montserrat,sans-serif;color:#fff;flex:none}
+.wa .hd b{font-size:14px;display:block} .wa .hd small{font-size:11px;opacity:.85}
+.wa .chat{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:7px}
+.msg{max-width:84%;padding:7px 10px 5px;border-radius:10px;font-size:14px;line-height:1.4;box-shadow:0 1px 1px rgba(0,0,0,.08);white-space:pre-line;color:var(--ink)}
+.msg.them{background:var(--wa-them);align-self:flex-start;border-top-left-radius:2px}
+.msg.me{background:var(--wa-me);align-self:flex-end;border-top-right-radius:2px}
+.msg .tm{display:block;text-align:right;font-size:10px;color:var(--ink3);margin-top:2px}
+.opts{display:grid;gap:6px;align-self:stretch;margin-inline:2px}
+.opts button{appearance:none;border:0;background:var(--wa-them);color:var(--wa);font:600 14px "IBM Plex Sans",sans-serif;padding:9px;border-radius:10px;cursor:pointer;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.opts button.on{background:var(--wa);color:#fff}
+.opts button:disabled{opacity:.5}
+.opts .row{display:flex;flex-wrap:wrap;gap:6px}
+.opts .row button{flex:1 1 auto;font-size:13px;padding:8px 10px}
+.opts .prod{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;text-align:left}
+.opts .prod .bowl{width:44px;height:44px}
+.opts .prod .bowl::after{height:20px;border-radius:0 0 24px 24px}
+.ticket{border:2px dashed var(--line2);border-radius:16px;padding:16px;background:var(--surface)}
+.ticket .code{font:800 24px Montserrat,sans-serif;color:var(--acai)}
+.ticket ul{margin:8px 0 0;padding-left:18px}
+
+/* Google */
+.review{padding:16px;border-bottom:1px solid var(--line);display:grid;gap:8px}
+.review:last-child{border-bottom:0}
+.review .who{display:flex;align-items:center;gap:10px}
+.review .who i{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font:700 13px Montserrat,sans-serif;font-style:normal}
+.stars{color:var(--g-star);letter-spacing:1px;font-size:14px}
+.stars .off{color:var(--line2)}
+.draft{background:var(--acai-soft);border-radius:12px;padding:12px;font-size:13px}
+.draft .who2{font:700 11px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--acai);margin-bottom:4px}
+.gscore{display:flex;align-items:center;gap:14px}
+.gscore .big{font:800 44px/1 Montserrat,sans-serif}
+
+/* sellos */
+.stamp-card{background:linear-gradient(135deg,var(--brand),#7B45A6);color:#fff;border-radius:22px;padding:20px;box-shadow:0 14px 30px rgba(74,33,112,.3);max-width:420px}
+.stamp-card .t{font:800 18px Montserrat,sans-serif}
+.stamp-card .s{font-size:12px;opacity:.85}
+.slots{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:16px 0}
+.slot{aspect-ratio:1/1;border-radius:50%;border:2px dashed rgba(255,255,255,.5);display:grid;place-items:center;font:800 12px Montserrat,sans-serif}
+.slot.on{background:var(--banana);border:0;color:#3A2A00;animation:pop .3s ease}
+.slot.gift{background:#fff;color:var(--brand);border:0}
+.slot.prize{border-style:solid;border-color:var(--banana);color:var(--banana)}
+@keyframes pop{from{transform:scale(.4)}to{transform:scale(1)}}
+.qr{width:120px;height:120px;flex:none;background:#fff;border-radius:12px;padding:9px;display:grid;grid-template-columns:repeat(21,1fr);grid-template-rows:repeat(21,1fr);box-shadow:inset 0 0 0 1px #e5e0ee}
+.qr i{background:#fff}
+.qr i.k{background:#1b1030}
+
+/* embudo */
+.funnel{display:grid;gap:8px}
+.fstep{display:grid;grid-template-columns:minmax(110px,160px) 1fr auto;gap:12px;align-items:center;font-size:13px}
+.fbar{height:34px;border-radius:10px;display:flex;align-items:center;padding-left:12px;color:#fff;font:700 13px Montserrat,sans-serif;min-width:52px}
+.fconv{font-size:12px;color:var(--ink3);white-space:nowrap}
+.persona{display:grid;gap:10px;padding:18px}
+.persona .tag{font:600 11px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--acai)}
+.persona h3{font-size:17px}
+.persona .facts{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
+.persona .facts span:nth-child(odd){color:var(--ink3)}
+.share{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.share i{display:block;height:100%;background:var(--acai)}
+
+/* recomendaciones */
 .rec{padding:16px;border-bottom:1px solid var(--line);display:grid;gap:8px}
 .rec:last-child{border-bottom:0}
 .rec .t{font:800 15px Montserrat,sans-serif}
 .rec .why{font-size:13px;color:var(--ink2)}
-.rec .imp{font-size:13px}
 .rec .acts{display:flex;gap:8px;flex-wrap:wrap}
 .rec.ok{background:var(--ok-bg)} .rec.no{opacity:.55}
-.ask{display:flex;flex-wrap:wrap;gap:8px}
-.chip{appearance:none;border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:7px 12px;font:600 12px "IBM Plex Sans",sans-serif;cursor:pointer;color:var(--ink)}
-.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
-.answer{margin-top:12px;background:var(--acai-soft);border-radius:12px;padding:14px;font-size:14px;min-height:60px}
-.answer .who{font:700 11px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--acai);margin-bottom:4px}
 
-/* whatsapp */
-.wa-grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:22px;align-items:start}
-@media (max-width:820px){.wa-grid{grid-template-columns:minmax(0,1fr)}}
-.phone{border-radius:28px;border:8px solid #17111F;background:var(--wa-bg);overflow:hidden;max-width:380px;width:100%;margin:0 auto;box-shadow:var(--shadow)}
-.phone .hd{background:var(--wa);color:#fff;display:flex;align-items:center;gap:10px;padding:12px 14px}
-.phone .av{width:34px;height:34px;border-radius:50%;background:var(--brand);display:grid;place-items:center;font:800 14px Montserrat,sans-serif;color:#fff;flex:none}
-.phone .hd b{font:700 14px "IBM Plex Sans",sans-serif;display:block}
-.phone .hd small{font-size:11px;opacity:.85}
-.chat{height:460px;overflow-y:auto;padding:14px 10px;display:flex;flex-direction:column;gap:8px}
-.msg{max-width:84%;padding:8px 10px 6px;border-radius:10px;font-size:14px;line-height:1.4;box-shadow:0 1px 1px rgba(0,0,0,.08);white-space:pre-line}
-.msg.them{background:var(--wa-them);align-self:flex-start;border-top-left-radius:2px}
-.msg.me{background:var(--wa-me);align-self:flex-end;border-top-right-radius:2px}
-.msg .tm{display:block;text-align:right;font-size:10px;color:var(--ink3);margin-top:2px}
-.opts{display:grid;gap:6px;align-self:stretch;margin-inline:4px}
-.opts button{appearance:none;border:0;background:var(--wa-them);color:var(--wa);font:600 14px "IBM Plex Sans",sans-serif;padding:9px;border-radius:10px;cursor:pointer;box-shadow:0 1px 1px rgba(0,0,0,.08)}
-.opts button.on{background:var(--wa);color:#fff}
-.opts .row{display:flex;flex-wrap:wrap;gap:6px}
-.opts .row button{flex:1 1 auto;font-size:13px;padding:8px 10px}
-.typing{align-self:flex-start;background:var(--wa-them);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--ink3)}
-.ticket{border:2px dashed var(--line2);border-radius:14px;padding:16px;background:var(--surface)}
-.ticket .code{font:800 22px Montserrat,sans-serif;color:var(--acai)}
-.ticket ul{margin:8px 0 0;padding-left:18px}
-.steps{display:grid;gap:10px;counter-reset:s}
-.step{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;font-size:14px}
-.step b{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--acai-soft);color:var(--acai);font:800 13px Montserrat,sans-serif}
+/* inventario */
+.freezer{background:linear-gradient(180deg,#0F2233,#16324A);border-radius:20px;padding:18px;color:#DDEBFF}
+.freezer .fh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.freezer .fh b{font:800 15px Montserrat,sans-serif}
+.freezer .temp{font:800 13px Montserrat,sans-serif;color:#7FE8FF}
+.jars{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+.jar{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px;display:grid;gap:8px;justify-items:center;text-align:center}
+.jar .tube{width:46px;height:96px;border-radius:12px;border:2px solid rgba(255,255,255,.35);position:relative;overflow:hidden;background:rgba(255,255,255,.05)}
+.jar .tube i{position:absolute;left:0;right:0;bottom:0;transition:height .6s ease}
+.jar .nm{font:700 12px Montserrat,sans-serif;color:#fff}
+.jar .dd{font:800 18px Montserrat,sans-serif}
+.jar .dd small{font-size:11px;font-weight:600;opacity:.8}
+.jar .st{font-size:11px;opacity:.8}
+.timeline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;position:relative;padding:8px 0}
+@media (max-width:700px){.timeline{grid-template-columns:minmax(0,1fr);gap:12px}}
+.tstep{display:grid;justify-items:center;text-align:center;gap:6px;position:relative;font-size:12px}
+.tstep .ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);border:2px solid var(--line2);color:var(--ink3);z-index:1}
+.tstep .ic svg{width:22px;height:22px}
+.tstep.done .ic{background:var(--ok);border-color:var(--ok);color:#fff}
+.tstep.now .ic{background:var(--banana);border-color:var(--banana);color:#3A2A00;box-shadow:0 0 0 6px var(--banana-soft)}
+.tstep b{font:700 12px Montserrat,sans-serif}
+.tstep small{color:var(--ink3)}
+@media (min-width:701px){.tstep:not(:last-child)::after{content:"";position:absolute;top:22px;left:50%;width:100%;height:3px;background:var(--line2)}.tstep.done:not(:last-child)::after{background:var(--ok)}}
+@media (max-width:700px){.tstep{grid-template-columns:44px 1fr;justify-items:start;text-align:left;align-items:center}}
+.counter{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid #eee;color:#111;font-size:14px}
+.counter .ctl{display:flex;align-items:center;gap:8px}
+.counter button{appearance:none;width:32px;height:32px;border-radius:50%;border:1px solid #ddd;background:#fafafa;font:700 16px Montserrat,sans-serif;cursor:pointer;color:#111}
+.counter b{min-width:44px;text-align:center;font:700 14px Montserrat,sans-serif}
+.formapp{background:#fff;color:#111;height:520px;display:flex;flex-direction:column}
+.formapp .hd{background:#0E8C7A;color:#fff;padding:14px;font:700 15px Montserrat,sans-serif}
+.formapp .hd small{display:block;font:500 12px "IBM Plex Sans",sans-serif;opacity:.85}
+.formapp .body{flex:1;overflow-y:auto}
+.formapp .foot{padding:12px}
+.formapp .foot button{width:100%;appearance:none;border:0;border-radius:12px;background:#0E8C7A;color:#fff;padding:12px;font:700 14px Montserrat,sans-serif;cursor:pointer}
+footer{margin-top:34px;font-size:11px;color:var(--ink3)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
-/* propuesta */
-.etapas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-@media (max-width:760px){.etapas{grid-template-columns:minmax(0,1fr)}}
-.etapa{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;align-content:start;box-shadow:var(--shadow)}
-.etapa .n{font:800 12px Montserrat,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--acai2)}
-.etapa h3{font-size:18px;font-weight:800}
-.etapa .dur{display:inline-block;background:var(--banana-soft);color:var(--warn);font:700 12px Montserrat,sans-serif;padding:3px 10px;border-radius:999px;justify-self:start}
-.etapa ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink2);display:grid;gap:4px}
-.etapa .ent{font-size:13px;border-top:1px solid var(--line);padding-top:10px}
-.pt-card{background:#0F1C2E;color:#F2F6FF;border-radius:16px;padding:22px;display:grid;gap:10px}
-.pt-card .wm{font:800 15px Montserrat,sans-serif;letter-spacing:.08em}
-.pt-card .wm span{color:var(--pt2)}
-.pt-card p{margin:0;color:#B9C4D8;max-width:62ch}
-.pt-card .ct{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:14px;margin-top:6px}
-.pt-card .ct b{font-family:Montserrat,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8FA0BD;display:block}
-footer{margin-top:30px;font-size:11px;color:var(--ink3)}
-[hidden]{display:none!important}
-@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+/* --- Cómo se conecta --- */
+.flow{display:grid;gap:0}
+.fnode{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+.fnode .fi2{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff}
+.fnode .fi2 svg{width:22px;height:22px}
+.fnode b{display:block;font-size:14px}
+.fnode small{display:block;font-size:12px;color:var(--ink2);line-height:1.35;margin-top:2px}
+.fnode .who3{font:700 10px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.farrow{height:26px;display:grid;place-items:center;color:var(--line2)}
+.farrow svg{width:18px;height:18px}
+@media (min-width:980px){.flow{grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr) 22px minmax(0,1fr);align-items:stretch}
+ .flow .farrow{height:auto}.flow .farrow svg{transform:rotate(-90deg)}
+ .fnode{grid-template-columns:1fr;align-content:start}}
+.conn-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}
+.conn-g .card{padding:16px}
+.conn-g h4{font:700 13px Montserrat,sans-serif;margin:0 0 8px}
+.conn-g ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink2);display:grid;gap:4px}
+/* --- Franquicia --- */
+.vision.app-v{appearance:none;text-align:left;cursor:pointer;border:0;width:100%;font:inherit;transition:transform .15s}
+.vision.app-v:hover{transform:translateY(-2px)}
+.vision .row{display:flex;gap:14px;align-items:center}
+.vision .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:var(--ic-fra);color:#fff;flex:none}
+.vision .ic svg{width:28px;height:28px}
+.vision .go{font:700 13px Montserrat,sans-serif;color:var(--pt2)}
+.inv-hero{background:#0F1C2E;color:#EAF0FF;border-radius:18px;padding:20px;display:grid;gap:14px}
+.inv-hero .ey{font:600 11px Montserrat,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--pt2)}
+.inv-hero h2{font-size:22px;color:#fff}
+.inv-hero p{margin:0;color:#B9C4D8;font-size:14px}
+.ik{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.ik div{background:#16283F;border-radius:14px;padding:14px}
+.ik b{display:block;font:800 22px/1.1 Montserrat,sans-serif;color:#fff}
+.ik span{display:block;font-size:12px;color:#B9C4D8;margin-top:4px}
+.months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;align-items:end;height:190px;margin-top:14px}
+.months .mc{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:2px}
+.months .mc i{display:block;border-radius:4px 4px 0 0}
+.months .mc i+i{border-radius:0}
+.mlab{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;font-size:10px;color:var(--ink3);text-align:center;margin-top:6px}
+.wf{display:grid;gap:8px}
+.wfr{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr) 92px;gap:10px;align-items:center;font-size:13px}
+.wfr .tr{height:16px;position:relative;background:var(--surface2);border-radius:6px;overflow:hidden}
+.wfr .tr i{position:absolute;top:0;bottom:0;border-radius:4px}
+.wfr .v{text-align:right;font-weight:700;white-space:nowrap}
+.wfr.tot{border-top:1px solid var(--line);padding-top:8px}
+.sim{display:grid;gap:10px}
+.sim input[type=range]{width:100%;accent-color:var(--acai)}
+.sim .big{font:800 30px/1 Montserrat,sans-serif;color:var(--acai)}
+.chk{display:grid;gap:10px}
+.chk div{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;font-size:14px;align-items:start}
+.chk i{width:26px;height:26px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:13px}
+.chk small{display:block;color:var(--ink2);font-size:12px}
+.pill.p-info{background:#E1ECFF;color:#1E4FCC}
+.inv-hero .leg .pill{margin-right:2px}
+.flows{display:grid;gap:6px;margin-top:6px}
+.fl{display:grid;grid-template-columns:48px minmax(0,1fr) 78px;gap:8px;align-items:center;font-size:12px}
+.fl .fb{height:14px;background:var(--surface2);border-radius:5px;overflow:hidden}
+.fl .fb i{display:block;height:100%}.fl .fb i.pos{background:var(--ok)}.fl .fb i.neg{background:var(--crit)}
+.fl b{text-align:right;font-size:12px}
+.chk i{font-size:12px}
+.chk>.note{display:block}
+.sim{align-content:start}
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <div class="cl">Guzza<small>Prototipo</small></div>
-    <div class="by"><svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true"><rect x="4" y="4" width="20" height="5" rx="1.5" fill="#fff"/><rect x="4" y="13.5" width="14" height="5" rx="1.5" fill="#fff"/><rect x="4" y="23" width="5" height="5" rx="1.5" fill="#fff"/><circle cx="24" cy="25.5" r="3.5" fill="#3DD9C0"/></svg>PERROT <span>TECH</span></div>
-  </div>
-  <div class="demo">Prototipo con datos de ejemplo · con sus datos reales, las cifras cambian</div>
-</header>
-
-<nav class="tabs" aria-label="Secciones"><div class="in" id="tabs"></div></nav>
-
+<header class="top"><div class="wrap" id="topbar"></div></header>
+<div class="demo">Prototipo con datos de ejemplo · con los datos reales de Guzza las cifras cambian</div>
+<div class="chips" id="chips" hidden><div class="in" id="chipsIn"></div></div>
 <main class="wrap" id="view"></main>
 
 <script>
 // =================== ÍCONOS ===================
 const I={
- home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
- panel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>',
- agent:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4"/><circle cx="9" cy="13" r="1.3" fill="currentColor"/><circle cx="15" cy="13" r="1.3" fill="currentColor"/></svg>',
- wa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.3-4.3A9 9 0 1 1 21 12z"/></svg>',
- plan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h6"/><path d="M17 15l2 2 3-4"/></svg>'
+ fra:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l1.5-5h15L21 10"/><path d="M4 10v10h16V10"/><path d="M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M10 20v-5h4v5"/></svg>',
+ pos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="10" rx="2"/><path d="M8 7h8"/><path d="M3 21h18l-2-8H5z"/></svg>',
+ db:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>',
+ bot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="14" r="1.2"/><circle cx="15" cy="14" r="1.2"/></svg>',
+ phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>',
+ ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
+ dash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>',
+ pay:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>',
+ star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>',
+ down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M6 14l6 6 6-6"/></svg>',
+
+ fin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 16v-5"/><path d="M11 16V8"/><path d="M16 16v-3"/><path d="M5 8l5-4 4 3 5-4"/></svg>',
+ cli:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></svg>',
+ inv:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"/><path d="M3 7l9 5 9-5"/><path d="M12 12v10"/></svg>',
+ back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+ logo:'<svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true"><rect x="4" y="4" width="20" height="5" rx="1.5" fill="#fff"/><rect x="4" y="13.5" width="14" height="5" rx="1.5" fill="#fff"/><rect x="4" y="23" width="5" height="5" rx="1.5" fill="#fff"/><circle cx="24" cy="25.5" r="3.5" fill="#3DD9C0"/></svg>',
+ heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
+ comment:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-12 7l-5 1 1-4A8 8 0 1 1 21 12z"/></svg>',
+ send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3L11 13"/><path d="M22 3l-7 19-4-9-9-4 20-6z"/></svg>',
+ ship:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2 4h14l2-4"/><path d="M5 17V9h14v8"/><path d="M12 3v6"/></svg>',
+ box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4"/></svg>',
+ doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 14l2 2 4-4"/></svg>',
+ truck:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h12v10H2z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
+ snow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M4 6l16 12M20 6L4 18"/></svg>',
+ store:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l2-5h14l2 5"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>'
 };
-const TABS=[["inicio","Inicio",I.home],["panel","Panel",I.panel],["agente","Agente",I.agent],["whatsapp","WhatsApp",I.wa],["propuesta","Propuesta",I.plan]];
 
 // =================== UTILIDADES ===================
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const clp=n=>"$"+Math.round(n).toLocaleString("es-CL");
-const mill=n=>"$"+(n/1e6).toFixed(1).replace(".",",")+" M";
-const pc=(x,d=0)=>(x*100).toFixed(d).replace(".",",")+"%";
+const mill=n=>(n<0?"−$":"$")+(Math.abs(n)/1e6).toFixed(1).replace(".",",")+" M";
+const pc=(x,d=0)=>(x*100).toFixed(d).replace(".",",")+"\u00a0%";
 const sum=a=>a.reduce((s,x)=>s+x,0);
+const hora=()=>{const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
 
-// =================== SUPUESTOS (editables) ===================
-// Todo el prototipo se calcula desde aquí. Son supuestos de ejemplo, no datos de Guzza.
-const S={
-  comisionApp:0.30,      // comisión referencial de la app de delivery
-  comisionWeb:0.032,     // pasarela de pago del sitio
-  pulpaKg:9000,          // costo pulpa de açaí por kg (importada)
-  metaMerma:0.05
-};
+// =================== SUPUESTOS DE EJEMPLO ===================
+const S={comisionApp:0.30,comisionWeb:0.038,pulpaKg:6000,metaMerma:0.05};
 const PROD=[
-  {id:"p",nombre:"Bowl pequeño 300 ml",precio:5490,pulpa:150,base:420,top:3,envase:210,peso:.24},
-  {id:"m",nombre:"Bowl mediano 500 ml",precio:6990,pulpa:250,base:560,top:4,envase:260,peso:.38},
-  {id:"g",nombre:"Bowl grande 700 ml",precio:8990,pulpa:350,base:720,top:5,envase:320,peso:.22},
-  {id:"s",nombre:"Smoothie de açaí",precio:4990,pulpa:180,base:300,top:0,envase:180,peso:.11},
-  {id:"l",nombre:"Açaí para llevar 1 L",precio:12990,pulpa:700,base:0,top:0,envase:450,peso:.05}
+  {nombre:"Bowl pequeño 300 ml",corto:"Pequeño",precio:5490,pulpa:150,base:900,top:3,peso:.24},
+  {nombre:"Bowl mediano 500 ml",corto:"Mediano",precio:6990,pulpa:250,base:1200,top:4,peso:.38},
+  {nombre:"Bowl grande 700 ml",corto:"Grande",precio:8990,pulpa:350,base:1500,top:5,peso:.22},
+  {nombre:"Smoothie de açaí",corto:"Smoothie",precio:4990,pulpa:180,base:500,top:0,peso:.11},
+  {nombre:"Açaí para llevar 1 L",corto:"1 litro",precio:12990,pulpa:700,base:450,top:0,peso:.05}
 ];
-const TOPS=[["Granola",120],["Plátano",110],["Frutilla",190],["Leche en polvo",90],["Miel",80],["Coco rallado",70],["Crema de avellana",260],["Mantequilla de maní",210],["Arándano",240],["Kiwi",150],["Chía",60],["Leche condensada",110]];
+const TOPS=["Granola","Plátano","Frutilla","Leche en polvo","Miel","Coco rallado","Crema de avellana","Mantequilla de maní","Arándano","Kiwi","Chía","Leche condensada"];
 const LOCALES=["Llacolen","Mall La Portada"];
-const CANALES=["Local","App de delivery","Web"];
+const CANALES=["Local","App de delivery","Web y WhatsApp"];
 const DIAS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
 const HORAS=[10,11,12,13,14,15,16,17,18,19,20,21];
 
-// =================== DATOS DE EJEMPLO (30 días) ===================
+// =================== VENTAS DE EJEMPLO (30 días) ===================
 let seed=20260923; const rnd=()=>{seed=(seed*1664525+1013904223)%4294967296;return seed/4294967296};
 const pick=w=>{let r=rnd()*sum(w),i=0;for(;i<w.length;i++){r-=w[i];if(r<=0)return i}return w.length-1};
 const pairs=[[1,0,3.2],[7,1,2.6],[6,2,2.4],[2,8,1.6],[4,0,1.5],[9,2,1.2]];
-function toppings(n){const out=new Set();let guard=0;while(out.size<n&&guard++<30){if(out.size&&rnd()<.55){const last=[...out][out.size-1];const cand=pairs.filter(p=>p[0]===last||p[1]===last);if(cand.length){const p=cand[pick(cand.map(c=>c[2]))];out.add(p[0]===last?p[1]:p[0]);continue}}out.add(pick([9,8,6,4,3,3,5,4,3,2,2,3]))}return [...out]}
-const ORD=[];
-const horaW=[2,4,7,10,9,6,5,7,9,8,5,2];
-for(let d=0;d<30;d++){const dow=d%7; for(let l=0;l<2;l++){
-  const base=(l===0?62:84)*(dow>=4?1.28:1)*(dow===1?.86:1);
-  const n=Math.round(base*(.9+rnd()*.2));
-  for(let k=0;k<n;k++){
-    let hi=pick(horaW); if(dow===1&&(hi===6||hi===7)&&rnd()<.4) hi=pick(horaW);
-    const c=pick(l===0?[52,38,10]:[66,26,8]);
-    const p=pick(PROD.map(x=>x.peso));
-    const tp=PROD[p].top?toppings(PROD[p].top):[];
-    ORD.push({d,dow,l,c,p,h:HORAS[hi],tp});
-  }}}
+function toppings(n){const out=new Set();let g=0;while(out.size<n&&g++<30){if(out.size&&rnd()<.55){const last=[...out][out.size-1];const cand=pairs.filter(p=>p[0]===last||p[1]===last);if(cand.length){const p=cand[pick(cand.map(c=>c[2]))];out.add(p[0]===last?p[1]:p[0]);continue}}out.add(pick([9,8,6,4,3,3,5,4,3,2,2,3]))}return [...out]}
+const ORD=[]; const horaW=[2,4,7,10,9,6,5,7,9,8,5,2];
+for(let d=0;d<30;d++){const dow=d%7;for(let l=0;l<2;l++){
+  const n=Math.round((l===0?62:84)*(dow>=4?1.28:1)*(dow===1?.86:1)*(.9+rnd()*.2));
+  for(let k=0;k<n;k++){let hi=pick(horaW);if(dow===1&&(hi===6||hi===7)&&rnd()<.4)hi=pick(horaW);
+    const c=pick(l===0?[52,38,10]:[66,26,8]);const p=pick(PROD.map(x=>x.peso));
+    ORD.push({d,dow,l,c,p,h:HORAS[hi],tp:PROD[p].top?toppings(PROD[p].top):[]});}}}
+const costo=PROD.map(p=>p.pulpa/1000*S.pulpaKg+p.base);
+const com=c=>c===1?S.comisionApp:c===2?S.comisionWeb:0;
+const margenUnit=(pi,c)=>PROD[pi].precio*(1-com(c))-costo[pi];
+function agg(f){const O=ORD.filter(f);const venta=sum(O.map(o=>PROD[o.p].precio));const cost=sum(O.map(o=>costo[o.p]));const cm=sum(O.map(o=>PROD[o.p].precio*com(o.c)));return {n:O.length,venta,cost,com:cm,margen:venta-cost-cm,ticket:O.length?venta/O.length:0,O}}
 
-// =================== CÁLCULOS ===================
-const topCost=ids=>sum(ids.map(i=>TOPS[i][1]));
-const avgTop=PROD.map(p=>{const o=ORD.filter(x=>PROD[x.p]===p&&x.tp.length);return o.length?sum(o.map(x=>topCost(x.tp)))/o.length:0});
-const costo=PROD.map((p,i)=>{const pul=p.pulpa/1000*S.pulpaKg;return {pulpa:pul,base:p.base,top:avgTop[i],envase:p.envase,total:pul+p.base+avgTop[i]+p.envase}});
-function margenUnit(pi,c){const p=PROD[pi];const com=c===1?S.comisionApp:c===2?S.comisionWeb:0;return p.precio-costo[pi].total-p.precio*com}
-function agg(filter){
-  const O=ORD.filter(filter);
-  const venta=sum(O.map(o=>PROD[o.p].precio));
-  const cost=sum(O.map(o=>costo[o.p].total));
-  const com=sum(O.map(o=>PROD[o.p].precio*(o.c===1?S.comisionApp:o.c===2?S.comisionWeb:0)));
-  return {n:O.length,venta,cost,com,margen:venta-cost-com,ticket:O.length?venta/O.length:0,O};
+// =================== ESTADO Y RUTAS ===================
+const APPS={
+  finanzas:{nombre:"Control financiero",ic:"fin",color:"var(--ic-fin)",secs:[["f-resumen","Resumen"],["f-ventas","Ventas"],["f-margen","Margen"],["f-agente","Agente financiero"],["x-conecta","Cómo se conecta"]]},
+  clientes:{nombre:"Clientes",ic:"cli",color:"var(--ic-cli)",secs:[["c-embudo","Embudo"],["c-objetivo","Cliente objetivo"],["c-ig","Agente Instagram"],["c-wa","Agente WhatsApp"],["c-resenas","Reseñas"],["c-sellos","Tarjeta de sellos"],["c-agente","El agente propone"],["x-conecta","Cómo se conecta"]]},
+  inventario:{nombre:"Inventario",ic:"inv",color:"var(--ic-inv)",secs:[["i-hoy","Stock hoy"],["i-lote","Lote en camino"],["i-rot","Rotación"],["i-merma","Merma"],["i-conteo","Conteo semanal"],["i-agente","Agente de reposición"],["x-conecta","Cómo se conecta"]]},
+  franquicia:{nombre:"Franquicia",ic:"fra",color:"var(--ic-fra)",secs:[["r-resumen","Resumen"],["r-meses","12 meses"],["r-capex","Inversión"],["r-opex","Gastos y resultado"],["r-kpi","Simulador"],["r-datos","Datos verificables"]]}
+};
+let app="inicio", filLocal=-1, recState={}, invLocal=1;
+function route(){const h=(location.hash||"").replace("#","");app=APPS[h]?h:"inicio";}
+window.addEventListener("hashchange",()=>{route();render();window.scrollTo({top:0})});
+function go(a){location.hash=a==="inicio"?"":a; if(a==="inicio"&&!location.hash){route();render();window.scrollTo({top:0})}}
+
+function topbar(){
+  const by=`<div class="by">${I.logo}PERROT <span>TECH</span></div>`;
+  if(app==="inicio"){$("#topbar").innerHTML=`<div class="cl">Guzza<small>Prototipo</small></div>${by}`;$("#chips").hidden=true;return}
+  const A=APPS[app];
+  $("#topbar").innerHTML=`<button class="back" id="back">${I.back}Inicio</button><div class="ttl">${A.nombre}</div>${by}`;
+  $("#back").onclick=()=>go("inicio");
+  $("#chips").hidden=false;
+  $("#chipsIn").innerHTML=A.secs.map((s,i)=>`<button class="chip" data-sec="${s[0]}" aria-pressed="${i===0}">${s[1]}</button>`).join("");
+  document.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-sec]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");document.getElementById(b.dataset.sec)?.scrollIntoView({behavior:"smooth",block:"start"})});
 }
-// merma de fruta (ejemplo): plátano y frutilla sobre la meta
-const MERMA=[{f:"Plátano",compra:612,merma:.12,kg:1300},{f:"Frutilla",compra:388,merma:.09,kg:3500},{f:"Kiwi",compra:96,merma:.04,kg:2900},{f:"Arándano",compra:54,merma:.03,kg:7800}];
-MERMA.forEach(m=>{m.perdida=m.compra*m.merma*m.kg;m.sobre=Math.max(0,m.merma-S.metaMerma)*m.compra*m.kg});
-
-// =================== ESTADO ===================
-let tab="inicio", filLocal=-1, recState={};
-try{const t=location.hash.replace("#","");if(TABS.some(x=>x[0]===t))tab=t}catch(e){}
-
-function nav(){
-  $("#tabs").innerHTML=TABS.map(t=>`<button role="tab" aria-selected="${t[0]===tab}" data-tab="${t[0]}">${t[2]}<span>${t[1]}</span></button>`).join("");
-  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>go(b.dataset.tab));
-}
-function go(t){tab=t;try{history.replaceState(null,"","#"+t)}catch(e){}render();window.scrollTo({top:0})}
 
 // =================== INICIO ===================
 function vInicio(){
-  const A=agg(()=>true);
+  const tile=(k,desc,items)=>{const A=APPS[k];return `<button class="app" data-go="${k}"><div class="ic" style="background:${A.color}">${I[A.ic]}</div><h3>${A.nombre}</h3><p>${desc}</p><ul>${items.map(x=>`<li>${x}</li>`).join("")}</ul><span class="go">Abrir la app ›</span></button>`};
   return `<div class="hero">
-    <div class="ey">Perrot Tech · agentes IA y sistemas a medida</div>
-    <h1>Cada bowl, con su margen real a la vista</h1>
-    <p>Un sistema hecho para Guzza: ve cuánto deja cada venta por local y canal, deja que un agente encuentre qué se vende y cuándo, y recibe pedidos por WhatsApp sin pagar comisión.</p>
-    <div class="cta"><button class="btn pri" data-go="panel">Ver el panel</button><button class="btn ghost" data-go="whatsapp">Probar el pedido por WhatsApp</button></div>
+    <div class="ey">Perrot Tech · agentes de IA y sistemas a la medida</div>
+    <h1>Más clientes, mejores decisiones y un negocio listo para crecer</h1>
+    <p>Tres apps que trabajan juntas para Guzza. Agentes de IA atienden, leen y alertan todos los días, y el dueño ve todo en un solo lugar.</p>
     <svg class="berries" viewBox="0 0 200 200" aria-hidden="true"><circle cx="70" cy="90" r="34" fill="#6B3597"/><circle cx="120" cy="70" r="28" fill="#5A2A85"/><circle cx="130" cy="125" r="38" fill="#7B45A6"/><circle cx="78" cy="148" r="24" fill="#5A2A85"/><circle cx="62" cy="82" r="7" fill="#fff" opacity=".25"/><circle cx="116" cy="112" r="9" fill="#fff" opacity=".2"/><path d="M118 42c8-14 22-20 34-18-4 12-16 20-30 22" fill="#3DD9C0"/></svg>
   </div>
-  <section><div class="sh"><h2>Lo que un negocio como Guzza suele no ver</h2></div>
-    <div class="card bd dolores">
-      <div class="dolor"><b>1</b><div><b style="all:unset;font-weight:600">El margen se va en la app de delivery.</b><div class="muted small">Con una comisión de 30 %, un bowl grande deja casi la mitad que en el local.</div></div></div>
-      <div class="dolor"><b>2</b><div><b style="all:unset;font-weight:600">Los toppings a gusto y la fruta que se pierde.</b><div class="muted small">Sin receta medida por gramos, el costo real de cada bowl es una estimación.</div></div></div>
-      <div class="dolor"><b>3</b><div><b style="all:unset;font-weight:600">Crecer con franquicias exige números ordenados.</b><div class="muted small">Un franquiciado compra un modelo que se puede medir y replicar.</div></div></div>
+  <section><div class="sh"><h2>Elige una app</h2><span class="n">cada una funciona sola y se conecta con las otras</span></div>
+    <div class="apps">
+      ${tile("finanzas","Ventas, márgenes y alertas del negocio, todos los días y sin planillas.",["Ventas por local y canal","Margen real después de comisiones","Resumen diario por WhatsApp"])}
+      ${tile("clientes","Agentes que atienden, convierten y hacen volver a cada cliente.",["Agente de Instagram y de WhatsApp","Reseñas de Google","Tarjeta de sellos digital"])}
+      ${tile("inventario","El stock de cada local a la vista, con avisos antes de que falte algo.",["Días de stock por insumo","Lote de açaí en camino","Rotación y merma"])}
     </div></section>
-  <section><div class="sh"><h2>Tres módulos, un solo sistema</h2><span class="n">toca uno para verlo</span></div>
-    <div class="mods">
-      <button class="mod" data-go="panel"><div class="ic">${I.panel}</div><h3>Panel del dueño</h3><p>Ventas por local y canal, costo real por bowl, merma de fruta y alertas.</p><span class="q">¿Cuánto me deja un bowl grande por la app?</span></button>
-      <button class="mod" data-go="agente"><div class="ic">${I.agent}</div><h3>Agente de consumo</h3><p>Lee cada venta y propone combos, horarios y precios. Tú apruebas.</p><span class="q">¿Qué toppings se piden juntos?</span></button>
-      <button class="mod" data-go="whatsapp"><div class="ic">${I.wa}</div><h3>Asistente WhatsApp</h3><p>El cliente arma su bowl y lo retira. El pedido llega directo al local.</p><span class="q">Sin comisión de app</span></button>
+  <section><div class="sh"><h2>Cómo trabajamos</h2></div>
+    <div class="card bd steps">
+      <div class="step"><b class="n">1</b><div><b>Diagnóstico.</b> Conocemos cómo vende y opera Guzza hoy, y qué herramientas ya usa.</div></div>
+      <div class="step"><b class="n">2</b><div><b>Una app a la vez.</b> Parten por la que más les sirve; cada módulo se implementa en pocas semanas.</div></div>
+      <div class="step"><b class="n">3</b><div><b>Agentes que proponen, el dueño decide.</b> Ningún precio, pedido o mensaje importante sale sin aprobación.</div></div>
+      <div class="step"><b class="n">4</b><div><b>Todo conectado.</b> Lo que pasa en clientes e inventario llega al control financiero.</div></div>
     </div></section>
-  <section><div class="kpis">
-    <div class="kpi"><div class="v num">${mill(A.venta)}</div><div class="l">Ventas del mes de ejemplo</div><div class="d">${A.n.toLocaleString("es-CL")} pedidos · 2 locales</div></div>
-    <div class="kpi"><div class="v num">${clp(A.ticket)}</div><div class="l">Ticket promedio</div><div class="d">todos los canales</div></div>
-    <div class="kpi hi"><div class="v num">${pc(A.margen/A.venta)}</div><div class="l">Margen después de insumos y comisiones</div><div class="d">antes de arriendo y sueldos</div></div>
+  <section><div class="sh"><h2>Visión de largo plazo</h2></div><button class="vision app-v" data-go="franquicia">
+    <div class="row"><div class="ic">${I.fra}</div><div><div class="ey">App Franquicia</div><h3>Crecer con franquicias, con números que se pueden verificar</h3></div></div>
+    <p>Después de 9 a 12 meses de datos ordenados, Guzza puede mostrar a un futuro franquiciado o inversionista cuánto vende y cuánto deja un local, mes a mes, con cifras cruzadas con la caja, el inventario y lo declarado al SII.</p>
+    <span class="go">Ver el panel para inversionistas ›</span>
+  </button></section>
+  <section><div class="pt-card">
+    <div class="wm">PERROT <span>TECH</span></div>
+    <div class="ct"><div><b>Contacto</b>Eduardo Perrot</div><div><b>Correo</b>perrot.br@gmail.com</div><div><b>Teléfono</b>+56 9 3017 3701</div></div>
   </div></section>
-  <footer>Prototipo desarrollado por Perrot Tech para la reunión con Guzza. Datos de ejemplo generados para la demostración; no corresponden a ventas reales.</footer>`;
+  <footer>Prototipo desarrollado por Perrot Tech para Guzza. Las cifras son datos de ejemplo generados para la demostración.</footer>`;
 }
 
-// =================== PANEL ===================
-function vPanel(){
+// =================== CONTROL FINANCIERO ===================
+function vFinanzas(){
   const f=o=>filLocal<0||o.l===filLocal;
   const A=agg(f);
-  const porLocal=LOCALES.map((nom,i)=>({nom,...agg(o=>o.l===i)}));
   const porCanal=CANALES.map((nom,i)=>({nom,...agg(o=>f(o)&&o.c===i)}));
+  const porLocal=LOCALES.map((nom,i)=>({nom,...agg(o=>o.l===i)}));
   const col=["var(--acai)","var(--banana)","var(--pt2)"];
   const maxL=Math.max(...porLocal.map(x=>x.venta));
-  const g=PROD[2], cg=costo[2];
-  const mLocal=margenUnit(2,0), mApp=margenUnit(2,1);
-  const perdida=sum(MERMA.map(m=>m.sobre));
-  const app=porCanal[1];
-  return `<div class="sh"><h2>Panel del dueño · últimos 30 días</h2>
+  const dia=[...Array(30)].map((_,d)=>sum(A.O.filter(o=>o.d===d).map(o=>PROD[o.p].precio)));
+  const maxD=Math.max(...dia);
+  const mLoc=margenUnit(2,0), mApp=margenUnit(2,1);
+  const app1=porCanal[1];
+  return `<section id="f-resumen" style="margin-top:0"><div class="sh"><h2>Resumen · últimos 30 días</h2>
     <div class="seg" role="group" aria-label="Local"><button data-loc="-1" aria-pressed="${filLocal<0}">Ambos</button>${LOCALES.map((n,i)=>`<button data-loc="${i}" aria-pressed="${filLocal===i}">${n}</button>`).join("")}</div></div>
   <div class="kpis">
-    <div class="kpi"><div class="v num">${mill(A.venta)}</div><div class="l">Ventas</div><div class="d">${A.n.toLocaleString("es-CL")} pedidos · ticket ${clp(A.ticket)}</div></div>
-    <div class="kpi"><div class="v num">${mill(A.cost)}</div><div class="l">Costo de insumos</div><div class="d">${pc(A.cost/A.venta)} de la venta</div></div>
-    <div class="kpi"><div class="v num bad">${mill(A.com)}</div><div class="l">Comisiones pagadas</div><div class="d">app de delivery y pasarela web</div></div>
-    <div class="kpi hi"><div class="v num">${mill(A.margen)}</div><div class="l">Margen de contribución</div><div class="d">${pc(A.margen/A.venta)} · antes de arriendo y sueldos</div></div>
-  </div>
+    <div class="kpi"><div class="v num">${mill(A.venta)}</div><div class="l">Ventas</div><div class="d">${A.n.toLocaleString("es-CL")} pedidos</div></div>
+    <div class="kpi"><div class="v num">${clp(A.ticket)}</div><div class="l">Ticket promedio</div><div class="d">todos los canales</div></div>
+    <div class="kpi"><div class="v num bad">${mill(A.com)}</div><div class="l">Comisiones pagadas</div><div class="d">apps de delivery y pagos en línea</div></div>
+    <div class="kpi hi"><div class="v num">${pc(A.margen/A.venta)}</div><div class="l">Margen después de insumos y comisiones</div><div class="d">${mill(A.margen)} en el mes</div></div>
+  </div></section>
 
-  <section class="g2">
-    <div><div class="sh"><h2>Ventas por canal</h2><span class="n">${filLocal<0?"ambos locales":LOCALES[filLocal]}</span></div>
-      <div class="card bd"><div class="stack">${porCanal.map((c,i)=>`<i style="width:${(c.venta/A.venta*100).toFixed(1)}%;background:${col[i]}"></i>`).join("")}</div>
-      <div class="leg">${porCanal.map((c,i)=>`<span style="--c:${col[i]}">${c.nom} ${pc(c.venta/A.venta)}</span>`).join("")}</div>
-      <div class="tw" style="margin-top:12px"><table><tr><th>Canal</th><th class="r">Ventas</th><th class="r">Comisión</th><th class="r">Margen</th></tr>
-      ${porCanal.map(c=>`<tr><td>${c.nom}</td><td class="r num">${mill(c.venta)}</td><td class="r num">${c.com?mill(c.com):"—"}</td><td class="r num"><b>${pc(c.venta?c.margen/c.venta:0)}</b></td></tr>`).join("")}</table></div></div></div>
-    <div><div class="sh"><h2>Ventas por local</h2></div>
-      <div class="card bd hb">${porLocal.map(x=>`<div class="hbr"><span>${x.nom}</span><div class="tr"><i style="width:${(x.venta/maxL*100).toFixed(1)}%;background:var(--acai)"></i></div><span class="v num">${mill(x.venta)}</span></div>`).join("")}
-      ${porLocal.map(x=>`<div class="small muted">${x.nom}: ${x.O.length.toLocaleString("es-CL")} pedidos · ticket ${clp(x.ticket)} · margen ${pc(x.margen/x.venta)}</div>`).join("")}</div></div>
-  </section>
-
-  <section><div class="sh"><h2>Cuánto deja un bowl grande</h2><span class="n">precio ${clp(g.precio)} · receta de ejemplo</span></div>
-    <div class="card bd">
-      <div class="stack">${[["Pulpa de açaí",cg.pulpa,"var(--acai)"],["Base (granola, fruta)",cg.base,"var(--acai2)"],["Toppings (promedio real)",cg.top,"var(--banana)"],["Envase",cg.envase,"var(--ink3)"],["Margen en el local",mLocal,"var(--ok)"]].map(x=>`<i title="${x[0]}" style="width:${(x[1]/g.precio*100).toFixed(1)}%;background:${x[2]}"></i>`).join("")}</div>
-      <div class="leg">${[["Pulpa",cg.pulpa,"var(--acai)"],["Base",cg.base,"var(--acai2)"],["Toppings",cg.top,"var(--banana)"],["Envase",cg.envase,"var(--ink3)"],["Margen",mLocal,"var(--ok)"]].map(x=>`<span style="--c:${x[2]}">${x[0]} ${clp(x[1])}</span>`).join("")}</div>
-      <div class="kpis" style="margin-top:14px">
-        <div class="kpi"><div class="v num good">${clp(mLocal)}</div><div class="l">Deja en el local</div><div class="d">${pc(mLocal/g.precio)} del precio</div></div>
-        <div class="kpi"><div class="v num bad">${clp(mApp)}</div><div class="l">Deja por la app de delivery</div><div class="d">${pc(mApp/g.precio)} · comisión ${pc(S.comisionApp)}</div></div>
-        <div class="kpi"><div class="v num">${clp(mLocal-mApp)}</div><div class="l">Diferencia por bowl</div><div class="d">× ${agg(o=>f(o)&&o.p===2&&o.c===1).n} grandes por la app al mes</div></div>
-      </div>
-      <div class="note">Los toppings se calculan con lo que realmente se pidió en cada venta, no con un promedio fijo.</div>
+  <section id="f-ventas"><div class="sh"><h2>Ventas</h2><span class="n">${filLocal<0?"ambos locales":LOCALES[filLocal]}</span></div>
+    <div class="card bd"><div class="small muted">Ventas por día · el color más oscuro marca los fines de semana</div>
+      <div class="days">${dia.map((v,d)=>`<i class="${d%7>=4?"we":""}" title="Día ${d+1}: ${clp(v)}" style="height:${(v/maxD*100).toFixed(1)}%"></i>`).join("")}</div></div>
+    <div class="g2" style="margin-top:16px">
+      <div class="card bd"><h3 style="font-size:15px">Por canal</h3>
+        <div class="stack">${porCanal.map((c,i)=>`<i style="width:${(c.venta/A.venta*100).toFixed(1)}%;background:${col[i]}"></i>`).join("")}</div>
+        <div class="leg">${porCanal.map((c,i)=>`<span style="--c:${col[i]}">${c.nom} ${pc(c.venta/A.venta)}</span>`).join("")}</div>
+        <div class="tw" style="margin-top:10px"><table><tr><th>Canal</th><th class="r">Ventas</th><th class="r">Margen</th></tr>${porCanal.map(c=>`<tr><td>${c.nom}</td><td class="r num">${mill(c.venta)}</td><td class="r num"><b>${pc(c.venta?c.margen/c.venta:0)}</b></td></tr>`).join("")}</table></div></div>
+      <div class="card bd"><h3 style="font-size:15px">Por local</h3><div class="hb" style="margin-top:12px">${porLocal.map(x=>`<div class="hbr"><span>${x.nom}</span><div class="tr"><i style="width:${(x.venta/maxL*100).toFixed(1)}%;background:var(--acai)"></i></div><span class="v num">${mill(x.venta)}</span></div>`).join("")}</div>
+        ${porLocal.map(x=>`<div class="small muted" style="margin-top:8px">${x.nom}: ${x.n.toLocaleString("es-CL")} pedidos · ticket ${clp(x.ticket)} · margen ${pc(x.margen/x.venta)}</div>`).join("")}</div>
     </div></section>
 
-  <section class="g2">
-    <div><div class="sh"><h2>Merma de fruta</h2><span class="n">meta ${pc(S.metaMerma)}</span></div>
-      <div class="card tw"><table><tr><th>Fruta</th><th class="r">Compra</th><th class="r">Merma</th><th class="r">Sobre la meta</th></tr>
-      ${MERMA.map(m=>`<tr><td>${m.f}</td><td class="r num">${m.compra} kg</td><td class="r"><span class="pill ${m.merma>S.metaMerma?"p-crit":"p-ok"}">${pc(m.merma)}</span></td><td class="r num">${m.sobre?clp(m.sobre):"—"}</td></tr>`).join("")}
-      <tr class="tot"><td colspan="3">Pérdida evitable del mes</td><td class="r num">${clp(perdida)}</td></tr></table></div></div>
-    <div><div class="sh"><h2>Alertas de hoy</h2><span class="n">el sistema avisa, tú decides</span></div>
-      <div class="card">
-        <div class="alert"><span class="dot" style="background:var(--crit)"></span><div><div class="t">Pulpa de açaí en La Portada: alcanza para 3 días</div><div class="m">Consumo promedio ${(sum(agg(o=>o.l===1).O.map(o=>PROD[o.p].pulpa))/30/1000).toFixed(1).replace(".",",")} kg diarios. Pedir hoy para no quebrar stock el fin de semana.</div></div></div>
-        <div class="alert"><span class="dot" style="background:var(--crit)"></span><div><div class="t">Merma de plátano en ${pc(MERMA[0].merma)} (meta ${pc(S.metaMerma)})</div><div class="m">Son ${clp(MERMA[0].sobre)} al mes que se pueden evitar comprando en dos entregas.</div></div></div>
-        <div class="alert"><span class="dot" style="background:var(--warn)"></span><div><div class="t">El bowl grande por la app deja ${clp(mApp)}</div><div class="m">${pc(mApp/g.precio)} del precio. Revisa el agente: propone un precio distinto para la app.</div></div></div>
-        <div class="alert"><span class="dot" style="background:var(--warn)"></span><div><div class="t">${pc(app.venta/A.venta)} de las ventas pasa por la app</div><div class="m">Pagaron ${mill(app.com)} en comisiones este mes. El pedido por WhatsApp puede llevarse una parte.</div></div></div>
-      </div></div>
-  </section>`;
-}
+  <section id="f-margen"><div class="sh"><h2>Margen por producto y canal</h2><span class="n">cuánto deja cada venta</span></div>
+    <div class="card tw"><table style="min-width:520px"><tr><th>Producto</th><th class="r">Precio</th><th class="r">En el local</th><th class="r">Por app de delivery</th></tr>
+      ${PROD.map((p,i)=>`<tr><td>${p.nombre}</td><td class="r num">${clp(p.precio)}</td><td class="r num"><b>${clp(margenUnit(i,0))}</b> <span class="muted">${pc(margenUnit(i,0)/p.precio)}</span></td><td class="r num"><b style="color:var(--crit)">${clp(margenUnit(i,1))}</b> <span class="muted">${pc(margenUnit(i,1)/p.precio)}</span></td></tr>`).join("")}
+    </table></div>
+    <div class="note">Un bowl grande deja ${clp(mLoc)} en el local y ${clp(mApp)} por la app: ${clp(mLoc-mApp)} de diferencia por cada venta.</div></section>
 
-// =================== AGENTE ===================
-function vAgente(){
-  const A=agg(()=>true);
-  const ventasProd=PROD.map((p,i)=>({p,n:A.O.filter(o=>o.p===i).length})).sort((a,b)=>b.n-a.n);
-  const maxP=ventasProd[0].n;
-  const pc2={}; A.O.forEach(o=>{for(let a=0;a<o.tp.length;a++)for(let b=a+1;b<o.tp.length;b++){const k=[o.tp[a],o.tp[b]].sort((x,y)=>x-y).join("-");pc2[k]=(pc2[k]||0)+1}});
-  const combos=Object.entries(pc2).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,n])=>({t:k.split("-").map(i=>TOPS[i][0]).join(" + "),n}));
-  const conTop=A.O.filter(o=>o.tp.length).length;
-  const M=DIAS.map(()=>HORAS.map(()=>0)); A.O.forEach(o=>{M[o.dow][HORAS.indexOf(o.h)]++});
-  const maxH=Math.max(...M.flat());
-  const avgMar16=(M[1][6]+M[1][7])/2, avgAll16=(sum(M.map(r=>r[6]+r[7]))/14);
-  const gApp=agg(o=>o.p===2&&o.c===1).n, mApp=margenUnit(2,1);
-  const recs=[
-    {id:"combo",t:`Bowl de la casa: ${combos[0].t}`,why:`${combos[0].n} pedidos del mes combinaron ${combos[0].t.toLowerCase()} (${pc(combos[0].n/conTop)} de los bowls con toppings).`,imp:"Un bowl fijo acelera la fila en hora punta y deja la receta medida por gramos."},
-    {id:"martes",t:"Martes de 16:00 a 18:00: 2x1 en smoothies",why:`Esa franja vende ${pc(1-avgMar16/avgAll16)} menos que el mismo horario del resto de la semana.`,imp:"Llena horas muertas con el producto de menor costo."},
-    {id:"precio",t:"Bowl grande en la app a "+clp(PROD[2].precio+900),why:`Hoy deja ${clp(mApp)} por venta en la app. Se vendieron ${gApp} este mes por ese canal.`,imp:`Recupera ${clp(900*(1-S.comisionApp)*gApp)} al mes sin tocar el precio del local.`},
-    {id:"stock",t:"Pedir pulpa para La Portada hoy",why:"Al ritmo actual el stock alcanza para 3 días y viene fin de semana, el peak de ventas.",imp:"Evita perder las ventas del sábado."}
-  ];
-  const heatColor=v=>{const t=v/maxH;return `color-mix(in srgb, var(--acai) ${Math.round(8+t*92)}%, var(--surface2))`};
-  return `<div class="sh"><h2>Agente de consumo</h2><span class="n">lee cada venta · propone · tú apruebas</span></div>
-  <div class="card"><div class="bd" style="border-bottom:1px solid var(--line)"><div class="small muted">Esta semana el agente propone</div></div>
-  ${recs.map(r=>{const s=recState[r.id];return `<div class="rec ${s==="ok"?"ok":s==="no"?"no":""}"><div class="t">${esc(r.t)}</div><div class="why">${esc(r.why)}</div><div class="imp"><b>Efecto esperado:</b> ${esc(r.imp)}</div>
-    <div class="acts">${s?`<span class="pill ${s==="ok"?"p-ok":"p-warn"}">${s==="ok"?"Aprobado":"Descartado"}</span><button class="btn sm" data-rec="${r.id}" data-v="">Deshacer</button>`:`<button class="btn sm acai" data-rec="${r.id}" data-v="ok">Aprobar</button><button class="btn sm" data-rec="${r.id}" data-v="no">Descartar</button>`}</div></div>`}).join("")}
-  </div>
-
-  <section class="g2">
-    <div><div class="sh"><h2>Lo más vendido</h2><span class="n">unidades del mes</span></div>
-      <div class="card bd hb">${ventasProd.map(x=>`<div class="hbr"><span>${esc(x.p.nombre)}</span><div class="tr"><i style="width:${(x.n/maxP*100).toFixed(1)}%;background:var(--acai)"></i></div><span class="v num">${x.n.toLocaleString("es-CL")}</span></div>`).join("")}</div></div>
-    <div><div class="sh"><h2>Toppings que se piden juntos</h2><span class="n">pares más frecuentes</span></div>
-      <div class="card tw"><table><tr><th>Combinación</th><th class="r">Pedidos</th></tr>${combos.map(c=>`<tr><td>${esc(c.t)}</td><td class="r num">${c.n}</td></tr>`).join("")}</table></div></div>
-  </section>
-
-  <section><div class="sh"><h2>Cuándo se vende</h2><span class="n">pedidos por día y hora · ambos locales</span></div>
-    <div class="card bd"><div class="tw"><div class="heat" style="min-width:420px">
-      <span></span>${HORAS.map(h=>`<span class="h">${h}</span>`).join("")}
-      ${DIAS.map((d,i)=>`<span class="d">${d}</span>${M[i].map((v,j)=>`<span class="c" title="${d} ${HORAS[j]}:00 · ${v} pedidos" style="background:${heatColor(v)}"></span>`).join("")}`).join("")}
-    </div></div><div class="note">Más oscuro = más pedidos. El peak está en almuerzo y a la salida del trabajo, y el fin de semana vende más.</div></div></section>
-
-  <section><div class="sh"><h2>Pregúntale al agente</h2><span class="n">respuestas calculadas con los datos</span></div>
-    <div class="card bd"><div class="ask">${QA().map((q,i)=>`<button class="chip" data-q="${i}" aria-pressed="false">${esc(q.q)}</button>`).join("")}</div>
-    <div class="answer" id="ans"><div class="who">Agente Guzza</div>Elige una pregunta.</div></div></section>`;
+  <section id="f-agente"><div class="sh"><h2>Agente financiero</h2><span class="n">revisa los números y avisa lo importante</span></div>
+    <div class="demo-grid">
+      <div class="phone"><div class="notch"><i></i></div><div class="wa" style="height:470px"><div class="hd"><div class="av">G</div><div><b>Agente Guzza</b><small>resumen del día</small></div></div>
+        <div class="chat"><div class="msg them">Buenos días. Resumen de ayer, martes:
+Ventas: ${clp(sum(A.O.filter(o=>o.d===22).map(o=>PROD[o.p].precio)))} (+8 % vs. el martes pasado)
+Mejor local: Mall La Portada
+Margen del día: ${pc(A.margen/A.venta)}
+<span class="tm">08:00</span></div>
+        <div class="msg them">Dos cosas para revisar:
+1. La app de delivery fue el ${pc(app1.venta/A.venta)} de las ventas; sus comisiones van en ${mill(app1.com)} este mes.
+2. El bowl grande por la app dejó ${clp(mApp)} por venta.
+¿Quieres ver una propuesta de precio para la app?<span class="tm">08:00</span></div>
+        <div class="msg me">Sí, muéstrame<span class="tm">08:12</span></div>
+        <div class="msg them">Subir el grande a ${clp(PROD[2].precio+900)} solo en la app recuperaría cerca de ${clp(Math.round(900*(1-S.comisionApp)*agg(o=>o.p===2&&o.c===1).n/1000)*1000)} al mes sin tocar el precio del local. ¿Lo dejo listo para aprobar?<span class="tm">08:12</span></div></div></div></div>
+      <div class="side">
+        <div class="card"><div class="alert"><span class="dot" style="background:var(--crit)"></span><div><div class="t">Comisiones de la app sobre lo normal</div><div class="m">${mill(app1.com)} en el mes. El agente sugiere mover pedidos a retiro por WhatsApp.</div></div><span class="pill p-crit">Hoy</span></div>
+          <div class="alert"><span class="dot" style="background:var(--warn)"></span><div><div class="t">Martes 16:00–18:00 vende menos</div><div class="m">La franja más baja de la semana: buena hora para una promoción.</div></div><span class="pill p-warn">Semana</span></div>
+          <div class="alert"><span class="dot" style="background:var(--ok)"></span><div><div class="t">El sábado fue el mejor día del mes</div><div class="m">Mall La Portada vendió 28 % más que el promedio.</div></div><span class="pill p-ok">Bien</span></div></div>
+        <div class="card bd"><div class="ask">${QA().map((q,i)=>`<button class="chip" data-q="${i}" aria-pressed="false">${esc(q.q)}</button>`).join("")}</div>
+          <div class="answer" id="ans"><div class="who">Agente financiero</div>Elige una pregunta.</div></div>
+      </div></div></section>`;
 }
 function QA(){
-  const A=agg(()=>true), L=LOCALES.map((n,i)=>agg(o=>o.l===i));
-  const app=agg(o=>o.c===1);
+  const L=LOCALES.map((n,i)=>agg(o=>o.l===i)), app=agg(o=>o.c===1);
   const g=PROD.map((p,i)=>({p,m:margenUnit(i,0)/p.precio})).sort((a,b)=>b.m-a.m);
-  const sab=agg(o=>o.dow===5), mar=agg(o=>o.dow===1);
   return [
-    {q:"¿Qué producto deja más margen?",a:`En el local, el ${g[0].p.nombre.toLowerCase()} deja ${pc(g[0].m)} de su precio. El que menos deja es el ${g[g.length-1].p.nombre.toLowerCase()} (${pc(g[g.length-1].m)}), porque lleva más pulpa por peso.`},
-    {q:"¿Cuánto pagamos a la app este mes?",a:`${clp(app.com)} en comisiones, sobre ${mill(app.venta)} vendidos por la app. Si un 20 % de esos pedidos se pasara a WhatsApp con retiro, quedarían ${clp(app.com*.2)} más al mes.`},
-    {q:"¿Qué local rinde mejor?",a:`${LOCALES[L[1].venta>L[0].venta?1:0]} vende más (${mill(Math.max(L[0].venta,L[1].venta))}). Margen: Llacolen ${pc(L[0].margen/L[0].venta)}, La Portada ${pc(L[1].margen/L[1].venta)}. Llacolen depende más de la app, por eso deja menos por peso vendido.`},
-    {q:"¿Cuál es el mejor y el peor día?",a:`El sábado es el día fuerte (${clp(sab.venta/Math.ceil(30/7))} promedio por sábado). El martes es el más bajo (${clp(mar.venta/Math.ceil(30/7))}). Por eso el agente propone una promoción el martes en la tarde.`}
+    {q:"¿Qué producto deja más margen?",a:`En el local, el ${g[0].p.nombre.toLowerCase()} deja ${pc(g[0].m)} de su precio; el que menos deja es el ${g[g.length-1].p.nombre.toLowerCase()} (${pc(g[g.length-1].m)}).`},
+    {q:"¿Cuánto pagamos en comisiones?",a:`${clp(app.com)} a la app de delivery este mes, sobre ${mill(app.venta)} vendidos por ese canal. Si un 20 % pasara a retiro por WhatsApp, quedarían ${clp(app.com*.2)} más al mes.`},
+    {q:"¿Qué local rinde mejor?",a:`${LOCALES[L[1].venta>L[0].venta?1:0]} vende más (${mill(Math.max(L[0].venta,L[1].venta))}). Margen: Llacolen ${pc(L[0].margen/L[0].venta)}, La Portada ${pc(L[1].margen/L[1].venta)}.`}
   ];
 }
 
-// =================== WHATSAPP ===================
+// =================== CLIENTES ===================
+function vClientes(){
+  const A=agg(()=>true);
+  const fun=[["Cuentas alcanzadas",24800,"#8134AF"],["Visitas al perfil",5200,"#A33AA0"],["Mensajes recibidos",1180,"#DD2A7B"],["Pedidos desde redes",640,"#F0555B"],["Clientes que vuelven",260,"#F58529"]];
+  const maxF=fun[0][1];
+  const M=DIAS.map(()=>HORAS.map(()=>0)); A.O.forEach(o=>{M[o.dow][HORAS.indexOf(o.h)]++}); const maxH=Math.max(...M.flat());
+  const seg=[
+    {tag:"Segmento 1",t:"Después del trabajo o del gimnasio",sh:.38,f:[["Cuándo","lun a vie, 17:00–20:00"],["Qué pide","bowl mediano, granola + plátano"],["Dónde","Mall La Portada"],["Cómo llega","Instagram y paso por el mall"]]},
+    {tag:"Segmento 2",t:"Salida de fin de semana",sh:.34,f:[["Cuándo","sáb y dom, 13:00–18:00"],["Qué pide","bowl grande y 1 litro para compartir"],["Dónde","ambos locales"],["Cómo llega","recomendación y reseñas"]]},
+    {tag:"Segmento 3",t:"Pedido a domicilio",sh:.28,f:[["Cuándo","noches y días nublados"],["Qué pide","bowl pequeño y smoothie"],["Dónde","Llacolen"],["Cómo llega","app de delivery"]]}
+  ];
+  const heatColor=v=>`color-mix(in srgb, var(--acai) ${Math.round(8+v/maxH*92)}%, var(--surface2))`;
+  return `<section id="c-embudo" style="margin-top:0"><div class="sh"><h2>Embudo de clientes · 30 días</h2><span class="n">de quien te ve a quien vuelve</span></div>
+    <div class="card bd funnel">${fun.map((x,i)=>`<div class="fstep"><span>${x[0]}</span><div><div class="fbar num" style="width:${Math.max(8,x[1]/maxF*100)}%;background:${x[2]}">${x[1].toLocaleString("es-CL")}</div></div><span class="fconv">${i?pc(x[1]/fun[i-1][1])+" del paso anterior":""}</span></div>`).join("")}
+    <div class="note">Cada paso lo alimenta un agente: Instagram trae y responde, WhatsApp convierte en pedido, la tarjeta de sellos hace volver.</div></div></section>
+
+  <section id="c-objetivo"><div class="sh"><h2>Cliente objetivo</h2><span class="n">el agente lo lee de las ventas y las interacciones</span></div>
+    <div class="g3">${seg.map(s=>`<div class="card persona"><div class="tag">${s.tag} · ${pc(s.sh)} de las ventas</div><div class="share"><i style="width:${s.sh*100}%"></i></div><h3>${s.t}</h3><div class="facts">${s.f.map(x=>`<span>${x[0]}</span><span>${x[1]}</span>`).join("")}</div></div>`).join("")}</div>
+    <div class="card bd" style="margin-top:16px"><div class="small muted" style="margin-bottom:8px">Pedidos por día y hora · más oscuro = más pedidos</div><div class="tw"><div class="heat"><span></span>${HORAS.map(h=>`<span class="h">${h}</span>`).join("")}${DIAS.map((d,i)=>`<span class="d">${d}</span>${M[i].map((v,j)=>`<span class="c" title="${d} ${HORAS[j]}:00 · ${v} pedidos" style="background:${heatColor(v)}"></span>`).join("")}`).join("")}</div></div></div></section>
+
+  <section id="c-ig"><div class="sh"><h2>Agente de Instagram</h2><span class="n">responde al instante, de día y de noche</span></div>
+    <div class="demo-grid">
+      <div class="phone"><div class="notch"><i></i></div><div id="igApp"></div></div>
+      <div class="side">
+        <div class="card bd"><h3 style="font-size:15px;margin-bottom:10px">Lo que hace el agente</h3><div class="flow" id="igFlow">
+          ${["Detecta el comentario en la publicación","Responde en público y abre un mensaje privado","Muestra la carta con fotos y precios","Lleva al pedido por WhatsApp o a retiro","Invita a la tarjeta de sellos"].map((t,i)=>`<div class="fi" data-f="${i}"><b>${i+1}</b><div>${t}</div></div>`).join("")}</div></div>
+        <div class="agentnote"><b>Pruébalo:</b> toca el comentario de la publicación. El agente conversa con el tono de la marca, y si algo requiere a una persona, avisa al equipo.</div>
+      </div></div></section>
+
+  <section id="c-wa"><div class="sh"><h2>Agente de WhatsApp · pedidos</h2><span class="n">arma el bowl, cobra y lo envía al local</span></div>
+    <div class="demo-grid">
+      <div class="phone"><div class="notch"><i></i></div><div class="wa"><div class="hd"><div class="av">G</div><div><b>Guzza</b><small>en línea · asistente de pedidos</small></div></div><div class="chat" id="chat"></div></div></div>
+      <div class="side"><div><div class="sh" style="margin-bottom:8px"><h2 style="font-size:15px">Así llega al local</h2></div><div class="ticket" id="ticket"></div></div>
+        <div class="agentnote"><b>Pruébalo:</b> haz un pedido completo tocando las opciones. Al pagar, el pedido aparece en el local y suma un sello a la tarjeta del cliente.</div></div>
+    </div></section>
+
+  <section id="c-resenas"><div class="sh"><h2>Agente de reseñas de Google</h2><span class="n">pide, responde y alerta</span></div>
+    <div class="g2">
+      <div class="card bd"><div class="gscore"><div class="big num">4,6</div><div><div class="stars">★★★★★</div><div class="small muted">128 reseñas · 21 en los últimos 30 días</div></div></div>
+        <div class="note">Después de cada compra, el agente invita al cliente a dejar su reseña. Las reseñas recientes y respondidas pesan más al elegir dónde comer.</div></div>
+      <div class="card" id="reviews"></div>
+    </div></section>
+
+  <section id="c-sellos"><div class="sh"><h2>Tarjeta de sellos digital</h2><span class="n">para que el cliente vuelva</span></div>
+    <div class="g2">
+      <div><div class="stamp-card"><div class="t">Guzza Club</div><div class="s">10 sellos = 1 bowl mediano gratis</div><div class="slots" id="slots"></div><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span class="small" id="stampTxt"></span><button class="btn ban sm" id="stampBtn">Registrar compra</button></div></div></div>
+      <div class="card bd" style="display:grid;gap:12px;align-content:start"><div style="display:flex;gap:14px;align-items:center"><div class="qr" id="qr"></div><div><b>QR en el mesón</b><div class="small muted">El cliente escanea, se inscribe en 10 segundos y parte con 2 sellos de regalo.</div></div></div>
+        <div class="small muted">Luego el agente le escribe por WhatsApp solo con su permiso: cuando le falta un sello, en su cumpleaños o si no vuelve en 30 días.</div></div>
+    </div></section>
+
+  <section id="c-agente"><div class="sh"><h2>El agente propone esta semana</h2><span class="n">tú apruebas o descartas</span></div>
+    <div class="card" id="recs"></div></section>`;
+}
+
+// --- Instagram demo
+let IG={step:0,msgs:[]};
+function igRender(){
+  const el=$("#igApp"); if(!el) return;
+  if(IG.step===0){
+    el.innerHTML=`<div class="ig"><div class="hd"><div class="av"><i>G</i></div><div><b>guzzachile</b><small>Antofagasta</small></div></div>
+      <div class="post"><span>Nuevo: bowl de maní y plátano</span></div>
+      <div class="acts">${I.heart}${I.comment}${I.send}</div>
+      <div class="cm"><div class="c"><b>1.284 Me gusta</b></div>
+        <div class="c"><b>guzzachile</b><span>Llegó el favorito del gimnasio.</span></div>
+        <div class="c"><b>cata.runner</b><span>¿Precio del grande? ¿Hacen envío? 😍</span></div>
+        <button id="igStart">Ver cómo responde el agente ›</button></div></div>`;
+    $("#igStart").onclick=()=>{IG.step=1;igStart2()};
+    return;
+  }
+  const body=IG.msgs.map(m=>m.sys?`<div class="sys">${esc(m.sys)}</div>`:m.them?`<div class="m them">${esc(m.them)}</div>`:m.me?`<div class="m me">${esc(m.me)}</div>`:m.carousel?`<div class="carousel">${PROD.slice(0,4).map((p,i)=>`<div class="pcard"><div class="img" style="background:${["#EADCF7","#F6E7C8","#DDEFE8","#F7DDE4"][i]}"><div class="bowl"></div></div><div class="tx"><b>${p.corto}</b>${clp(p.precio)}</div><button data-ig="p${i}">Elegir</button></div>`).join("")}</div>`:m.qr?`<div class="qr-row">${m.qr.map(q=>`<button data-ig="${q[0]}">${esc(q[1])}</button>`).join("")}</div>`:"").join("");
+  el.innerHTML=`<div class="igdm"><div class="ig"><div class="hd"><div class="av"><i>G</i></div><div><b>guzzachile</b><small>Suele responder al instante</small></div></div></div><div class="msgs" id="igMsgs">${body}</div></div>`;
+  el.querySelectorAll("[data-ig]").forEach(b=>b.onclick=()=>igAct(b.dataset.ig));
+  const m=$("#igMsgs"); m.scrollTop=m.scrollHeight;
+}
+function igFlow(n){document.querySelectorAll("#igFlow .fi").forEach((x,i)=>x.classList.toggle("on",i<n))}
+function igAct(a){
+  IG.msgs=IG.msgs.filter(m=>!m.qr);
+  if(a.startsWith("p")){const p=PROD[+a.slice(1)];IG.msgs=IG.msgs.filter(m=>!m.carousel);IG.msgs.push({me:p.corto},{them:`¡Buena elección! El ${p.corto.toLowerCase()} está a ${clp(p.precio)}.\n¿Cómo lo quieres recibir?`},{qr:[["retiro","Retiro en local"],["wsp","Pedir por WhatsApp"],["delivery","A domicilio"]]});igFlow(4)}
+  else if(a==="retiro"||a==="wsp"){IG.msgs.push({me:a==="retiro"?"Retiro en local":"Pedir por WhatsApp"},{them:"Te abrí el WhatsApp de Guzza con tu bowl ya elegido. Lo armas en 1 minuto y lo pagas con link."},{them:"Y un regalo: únete al Guzza Club y parte con 2 sellos. Al décimo, tu bowl es gratis 💛"},{qr:[["club","Quiero mis 2 sellos"],["fin","Gracias"]]});igFlow(5)}
+  else if(a==="delivery"){IG.msgs.push({me:"A domicilio"},{them:"Hacemos envío por app de delivery y también puedes pedir por WhatsApp para retiro en 15 minutos."},{qr:[["wsp","Pedir por WhatsApp"],["fin","Gracias"]]});igFlow(4)}
+  else if(a==="club"){IG.msgs.push({me:"Quiero mis 2 sellos"},{them:"¡Listo, Cata! Ya tienes 2 de 10 sellos. Te aviso cuando te falte poco 💜"});}
+  else if(a==="fin"){IG.msgs.push({me:"Gracias"},{them:"¡A ti! Que disfrutes tu Guzza 🍇"});}
+  igRender();
+}
+function igStart2(){IG.msgs=[{sys:"cata.runner comentó en tu publicación"},{them:"¡Hola Cata! Gracias por tu comentario. Te dejo la carta de hoy 👇"},{carousel:true}];igFlow(3);igRender()}
+
+// --- WhatsApp demo
 let WA={msgs:[],step:"inicio",local:null,size:null,tops:[],hora:null,code:null,sent:false};
-function hora(){const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
-function waReset(){WA={msgs:[],step:"inicio",local:null,size:null,tops:[],hora:null,code:null,sent:false};waBot("Hola, soy el asistente de Guzza.\n¿Qué quieres hacer?")}
-function waBot(t){WA.msgs.push({me:false,t,h:hora()})}
-function waMe(t){WA.msgs.push({me:true,t,h:hora()})}
+function waReset(){WA={msgs:[],step:"inicio",local:null,size:null,tops:[],hora:null,code:null,sent:false};waBot("¡Hola! Soy el asistente de Guzza 💜\n¿Qué quieres hacer?")}
+const waBot=t=>WA.msgs.push({me:false,t,h:hora()}), waMe=t=>WA.msgs.push({me:true,t,h:hora()});
 function waOpts(){
   const s=WA.step;
-  if(s==="inicio") return `<div class="opts"><button data-wa="pedir">Pedir para retirar</button><button data-wa="carta">Ver la carta</button><button data-wa="horario">Locales y horarios</button></div>`;
-  if(s==="local") return `<div class="opts">${LOCALES.map((l,i)=>`<button data-wa="loc:${i}">${l}</button>`).join("")}</div>`;
-  if(s==="size") return `<div class="opts">${PROD.slice(0,3).map((p,i)=>`<button data-wa="size:${i}">${p.nombre} · ${clp(p.precio)}</button>`).join("")}</div>`;
-  if(s==="tops"){const max=PROD[WA.size].top;return `<div class="opts"><div class="row">${TOPS.slice(0,10).map((t,i)=>`<button class="${WA.tops.includes(i)?"on":""}" data-wa="top:${i}">${t[0]}</button>`).join("")}</div><button data-wa="topsok" ${WA.tops.length?"":"disabled style='opacity:.5'"}>Listo (${WA.tops.length}/${max})</button></div>`}
-  if(s==="hora") return `<div class="opts"><button data-wa="h:Lo antes posible">Lo antes posible</button><button data-wa="h:En 30 minutos">En 30 minutos</button><button data-wa="h:En 1 hora">En 1 hora</button></div>`;
-  if(s==="pago") return `<div class="opts"><button data-wa="pagar">Pagar con link</button><button data-wa="cambiar">Cambiar el pedido</button></div>`;
-  if(s==="fin") return `<div class="opts"><button data-wa="reset">Hacer otro pedido</button></div>`;
+  if(s==="inicio")return `<div class="opts"><button data-wa="pedir">Pedir para retirar</button><button data-wa="carta">Ver la carta</button><button data-wa="horario">Locales y horarios</button></div>`;
+  if(s==="local")return `<div class="opts">${LOCALES.map((l,i)=>`<button data-wa="loc:${i}">${l}</button>`).join("")}</div>`;
+  if(s==="size")return `<div class="opts">${PROD.slice(0,3).map((p,i)=>`<button class="prod" data-wa="size:${i}"><div class="bowl"></div><span><b>${p.corto}</b><br><small>${p.top} toppings incluidos</small></span><b>${clp(p.precio)}</b></button>`).join("")}</div>`;
+  if(s==="tops"){const max=PROD[WA.size].top;return `<div class="opts"><div class="row">${TOPS.slice(0,10).map((t,i)=>`<button class="${WA.tops.includes(i)?"on":""}" data-wa="top:${i}">${t}</button>`).join("")}</div><button data-wa="topsok" ${WA.tops.length?"":"disabled"}>Listo (${WA.tops.length}/${max})</button></div>`}
+  if(s==="hora")return `<div class="opts"><button data-wa="h:Lo antes posible">Lo antes posible (15 min)</button><button data-wa="h:En 30 minutos">En 30 minutos</button><button data-wa="h:En 1 hora">En 1 hora</button></div>`;
+  if(s==="pago")return `<div class="opts"><button data-wa="pagar">Pagar con link</button><button data-wa="cambiar">Cambiar el pedido</button></div>`;
+  if(s==="fin")return `<div class="opts"><button data-wa="reset">Hacer otro pedido</button></div>`;
   return "";
 }
 function waAct(a){
-  if(a==="reset"){waReset();return}
+  if(a==="reset"){waReset();renderWA();return}
   if(a==="pedir"){waMe("Pedir para retirar");waBot("¿En qué local lo retiras?");WA.step="local"}
   else if(a==="carta"){waMe("Ver la carta");waBot(PROD.map(p=>`${p.nombre}: ${clp(p.precio)}`).join("\n"));WA.step="inicio"}
   else if(a==="horario"){waMe("Locales y horarios");waBot("Llacolen: todos los días 9:30 a 20:30\nMall La Portada: todos los días 10:00 a 20:30");WA.step="inicio"}
   else if(a.startsWith("loc:")){WA.local=+a.slice(4);waMe(LOCALES[WA.local]);waBot("¿Qué tamaño quieres?");WA.step="size"}
-  else if(a.startsWith("size:")){WA.size=+a.slice(5);WA.tops=[];waMe(PROD[WA.size].nombre);waBot(`Elige hasta ${PROD[WA.size].top} toppings incluidos.`);WA.step="tops"}
+  else if(a.startsWith("size:")){WA.size=+a.slice(5);WA.tops=[];waMe(PROD[WA.size].nombre);waBot(`Elige hasta ${PROD[WA.size].top} toppings.\nLo más pedido hoy: granola + plátano.`);WA.step="tops"}
   else if(a.startsWith("top:")){const i=+a.slice(4),max=PROD[WA.size].top;if(WA.tops.includes(i))WA.tops=WA.tops.filter(x=>x!==i);else if(WA.tops.length<max)WA.tops.push(i);renderWA();return}
-  else if(a==="topsok"){waMe(WA.tops.map(i=>TOPS[i][0]).join(", "));waBot("¿Para cuándo lo quieres?");WA.step="hora"}
-  else if(a.startsWith("h:")){WA.hora=a.slice(2);waMe(WA.hora);const p=PROD[WA.size];waBot(`Tu pedido:\n${p.nombre}\n${WA.tops.map(i=>TOPS[i][0]).join(", ")}\nRetiro en ${LOCALES[WA.local]} · ${WA.hora.toLowerCase()}\nTotal: ${clp(p.precio)}`);WA.step="pago"}
+  else if(a==="topsok"){waMe(WA.tops.map(i=>TOPS[i]).join(", "));waBot("¿Para cuándo lo quieres?");WA.step="hora"}
+  else if(a.startsWith("h:")){WA.hora=a.slice(2);waMe(WA.hora);const p=PROD[WA.size];waBot(`Tu pedido:\n${p.nombre}\n${WA.tops.map(i=>TOPS[i]).join(", ")}\nRetiro en ${LOCALES[WA.local]} · ${WA.hora.toLowerCase()}\nTotal: ${clp(p.precio)}`);WA.step="pago"}
   else if(a==="cambiar"){waMe("Cambiar el pedido");waBot("¿Qué tamaño quieres?");WA.step="size"}
-  else if(a==="pagar"){waMe("Pagar con link");WA.code="G-"+(1400+Math.floor(Math.random()*90));waBot(`Pago recibido.\nPedido ${WA.code} enviado a ${LOCALES[WA.local]}.\nTe avisamos cuando esté listo.`);WA.step="fin";WA.sent=true}
+  else if(a==="pagar"){waMe("Pagar con link");WA.code="G-"+(1400+Math.floor(Math.random()*90));waBot(`Pago recibido ✅\nPedido ${WA.code} enviado a ${LOCALES[WA.local]}.\nSumaste 1 sello en tu Guzza Club (3 de 10).`);WA.step="fin";WA.sent=true}
   renderWA();
 }
 function renderWA(){
@@ -486,65 +697,276 @@ function renderWA(){
   c.innerHTML=WA.msgs.map(m=>`<div class="msg ${m.me?"me":"them"}">${esc(m.t)}<span class="tm">${m.h}</span></div>`).join("")+waOpts();
   c.querySelectorAll("[data-wa]").forEach(b=>b.onclick=()=>waAct(b.dataset.wa));
   c.scrollTop=c.scrollHeight;
-  const t=$("#ticket"); if(t) t.innerHTML=ticketHtml();
-}
-function ticketHtml(){
-  if(!WA.sent) return `<div class="muted">Cuando el cliente paga, el pedido aparece aquí en la pantalla del local, con su código y hora de retiro.</div>`;
+  const t=$("#ticket"); if(!t) return;
+  if(!WA.sent){t.innerHTML=`<div class="muted">Cuando el cliente paga, el pedido aparece aquí, en la pantalla del local, con su código y hora de retiro.</div>`;return}
   const p=PROD[WA.size];
-  return `<div class="small muted">Nuevo pedido · WhatsApp · pagado</div><div class="code">${esc(WA.code)}</div><div><b>${esc(LOCALES[WA.local])}</b> · retiro ${esc(WA.hora.toLowerCase())}</div><ul><li>${esc(p.nombre)}</li>${WA.tops.map(i=>`<li>${esc(TOPS[i][0])}</li>`).join("")}</ul><div style="margin-top:8px"><b>${clp(p.precio)}</b> <span class="pill p-ok">sin comisión de app</span></div><div class="note">Deja ${clp(margenUnit(WA.size,2))} de margen, contra ${clp(margenUnit(WA.size,1))} si el mismo bowl entrara por la app.</div>`;
-}
-function vWA(){
-  return `<div class="sh"><h2>Asistente WhatsApp</h2><span class="n">pruébalo: toca las opciones</span></div>
-  <div class="wa-grid">
-    <div class="phone"><div class="hd"><div class="av">G</div><div><b>Guzza</b><small>asistente de pedidos</small></div></div><div class="chat" id="chat"></div></div>
-    <div style="display:grid;gap:16px">
-      <div><div class="sh"><h2>Así llega al local</h2></div><div class="ticket" id="ticket"></div></div>
-      <div class="card bd"><div class="sh" style="margin-bottom:8px"><h2>Cómo funciona</h2></div><div class="steps">
-        <div class="step"><b>1</b><div>El cliente escribe al WhatsApp de Guzza, desde Instagram o un código QR en el local.</div></div>
-        <div class="step"><b>2</b><div>Arma su bowl con botones: local, tamaño, toppings y hora de retiro.</div></div>
-        <div class="step"><b>3</b><div>Paga con un link y el pedido entra al panel del local, ya pagado.</div></div>
-        <div class="step"><b>4</b><div>Cada pedido alimenta al agente de consumo y al panel del dueño.</div></div>
-      </div></div>
-      <div class="note">En la versión real funciona con la API oficial de WhatsApp Business y un medio de pago chileno. Los mensajes van cortos y con botones, como en esta demostración.</div>
-    </div>
-  </div>`;
+  t.innerHTML=`<div class="small muted">Nuevo pedido · WhatsApp · pagado</div><div class="code">${esc(WA.code)}</div><div><b>${esc(LOCALES[WA.local])}</b> · retiro ${esc(WA.hora.toLowerCase())}</div><ul><li>${esc(p.nombre)}</li>${WA.tops.map(i=>`<li>${esc(TOPS[i])}</li>`).join("")}</ul><div style="margin-top:8px"><b>${clp(p.precio)}</b> <span class="pill p-ok">sin comisión de app</span> <span class="pill p-acai">+1 sello</span></div><div class="note">Deja ${clp(margenUnit(WA.size,2))} de margen, contra ${clp(margenUnit(WA.size,1))} si entrara por la app de delivery.</div>`;
 }
 
-// =================== PROPUESTA ===================
-function vPropuesta(){
-  return `<div class="sh"><h2>Cómo lo hacemos realidad</h2><span class="n">de sus datos reales a un sistema funcionando</span></div>
-  <div class="etapas">
-    <div class="etapa"><div class="n">Etapa 1</div><h3>Diagnóstico</h3><span class="dur">1 semana</span><ul><li>Levantamos ventas por local y canal</li><li>Medimos recetas y gramajes reales</li><li>Calculamos costo y margen de cada producto</li></ul><div class="ent"><b>Entregable:</b> informe de costo por bowl y margen por canal con sus números.</div></div>
-    <div class="etapa"><div class="n">Etapa 2</div><h3>Piloto</h3><span class="dur">3 a 4 semanas · un local</span><ul><li>Panel del dueño con sus datos</li><li>Agente de consumo con propuestas semanales</li><li>Alertas de stock y merma</li></ul><div class="ent"><b>Entregable:</b> sistema funcionando en un local y resultados medidos.</div></div>
-    <div class="etapa"><div class="n">Etapa 3</div><h3>Implementación</h3><span class="dur">ambos locales</span><ul><li>Asistente WhatsApp con pago en línea</li><li>Panel para los dos locales</li><li>Modelo listo para replicar en franquicias</li></ul><div class="ent"><b>Entregable:</b> sistema completo, capacitación y soporte mensual.</div></div>
-  </div>
-  <section><div class="sh"><h2>Para empezar necesitamos</h2></div><div class="card bd steps">
-    <div class="step"><b>1</b><div>Las ventas de un mes, por local y por canal (exportación de la caja y reporte de la app de delivery).</div></div>
-    <div class="step"><b>2</b><div>Las recetas y gramajes de cada tamaño, y la lista de toppings.</div></div>
-    <div class="step"><b>3</b><div>Las facturas de compra de pulpa y fruta del último mes.</div></div>
-    <div class="step"><b>4</b><div>Una persona de contacto en cada local.</div></div>
-  </div></section>
-  <section><div class="pt-card">
-    <div class="wm">PERROT <span>TECH</span></div>
-    <p>Soluciones estratégicas con agentes de inteligencia artificial y sistemas a medida para empresas que quieren decidir con sus propios datos.</p>
-    <div class="ct"><div><b>Contacto</b>Eduardo Perrot</div><div><b>Correo</b>perrot.br@gmail.com</div><div><b>Teléfono</b>+56 9 3017 3701</div></div>
-  </div></section>
-  <footer>Prototipo con datos de ejemplo. Las cifras reales se calculan en el diagnóstico con la información de Guzza.</footer>`;
+// --- Reseñas
+const REV=[
+ {n:"Valentina R.",c:"#DD2A7B",s:5,t:"El mejor açaí de Antofa, súper fresco y la atención muy buena. El de maní es adictivo.",r:"¡Gracias, Valentina! Nos alegra que el de maní se haya ganado tu corazón 💜 Te esperamos pronto en el mall para el próximo."},
+ {n:"Diego M.",c:"#1E5BFF",s:4,t:"Rico, pero el sábado en la tarde había mucha fila.",r:"Gracias, Diego. Los sábados en la tarde son nuestro peak; puedes pedir por WhatsApp y retirar sin fila en 15 minutos. ¡Te esperamos!"},
+ {n:"Camila S.",c:"#C7362B",s:2,t:"Mi pedido por delivery llegó derretido.",r:"Camila, lamentamos mucho lo de tu pedido. Te escribimos por interno para reponerlo. Ya revisamos el empaque para los envíos.",bad:true}
+];
+let revState={};
+function renderRev(){
+  const el=$("#reviews"); if(!el) return;
+  el.innerHTML=REV.map((r,i)=>{const st=revState[i];return `<div class="review"><div class="who"><i style="background:${r.c}">${r.n[0]}</i><div><b>${esc(r.n)}</b><div class="stars">${"★".repeat(r.s)}<span class="off">${"★".repeat(5-r.s)}</span></div></div>${r.bad?'<span class="pill p-crit" style="margin-left:auto">Alerta al dueño</span>':""}</div><div>${esc(r.t)}</div>
+    ${st==="ok"?`<div class="draft"><div class="who2">Respuesta publicada</div>${esc(r.r)}</div>`:st==="show"?`<div class="draft"><div class="who2">El agente propone</div>${esc(r.r)}</div><div style="display:flex;gap:8px"><button class="btn pri sm" data-rv="${i}:ok">Aprobar y publicar</button><button class="btn sm" data-rv="${i}:x">Editar</button></div>`:`<button class="btn sm" data-rv="${i}:show" style="justify-self:start">Ver respuesta del agente</button>`}</div>`}).join("");
+  el.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>{const [i,v]=b.dataset.rv.split(":");revState[i]=v==="x"?"show":v;renderRev()});
 }
+
+// --- Sellos
+let stamps=2;
+function renderStamps(){
+  const el=$("#slots"); if(!el) return;
+  el.innerHTML=[...Array(10)].map((_,i)=>i<2?`<div class="slot gift">🎁</div>`:i<stamps?`<div class="slot on">✓</div>`:i===9?`<div class="slot prize">GRATIS</div>`:`<div class="slot">${i+1}</div>`).join("");
+  $("#stampTxt").textContent=stamps>=10?"¡Bowl gratis desbloqueado!":`${stamps} de 10 · te faltan ${10-stamps}`;
+  $("#stampBtn").textContent=stamps>=10?"Canjear y reiniciar":"Registrar compra";
+}
+function renderQR(){const el=$("#qr");if(!el)return;let sd=11;const r=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
+  const N=21,fin=(x,y,ox,oy)=>{const dx=x-ox,dy=y-oy;if(dx<0||dy<0||dx>6||dy>6)return null;return dx===0||dy===0||dx===6||dy===6||(dx>=2&&dx<=4&&dy>=2&&dy<=4)};
+  const sep=(x,y)=>(x<=7&&y<=7)||(x>=N-8&&y<=7)||(x<=7&&y>=N-8);
+  el.innerHTML=[...Array(N*N)].map((_,i)=>{const x=i%N,y=Math.floor(i/N);let f=fin(x,y,0,0);if(f===null)f=fin(x,y,N-7,0);if(f===null)f=fin(x,y,0,N-7);if(f===null)f=sep(x,y)?false:(y===6||x===6)?(x+y)%2===0:r()>.52;return `<i class="${f?"k":""}"></i>`}).join("")}
+
+// --- Recomendaciones
+function renderRecs(){
+  const el=$("#recs"); if(!el) return;
+  const R=[
+    {id:"combo",t:"Bowl de la casa: granola + plátano",why:"Es la combinación más pedida del mes. Un bowl fijo acelera la fila en hora punta."},
+    {id:"martes",t:"Martes 16:00–18:00: 2x1 en smoothies",why:"Es la franja más baja de la semana. Llena horas vacías con el producto de menor costo."},
+    {id:"club",t:"Mensaje a 84 clientes que no vuelven desde hace 30 días",why:"Todos inscritos en el Guzza Club con permiso para recibir mensajes. Oferta: sello doble esta semana."},
+    {id:"resena",t:"Pedir reseña a los clientes de los 46 pedidos del fin de semana",why:"Las reseñas recientes pesan más al elegir dónde comer."}
+  ];
+  el.innerHTML=R.map(r=>{const s=recState[r.id];return `<div class="rec ${s==="ok"?"ok":s==="no"?"no":""}"><div class="t">${esc(r.t)}</div><div class="why">${esc(r.why)}</div><div class="acts">${s?`<span class="pill ${s==="ok"?"p-ok":"p-warn"}">${s==="ok"?"Aprobado":"Descartado"}</span><button class="btn sm" data-rec="${r.id}" data-v="">Deshacer</button>`:`<button class="btn pri sm" data-rec="${r.id}" data-v="ok">Aprobar</button><button class="btn sm" data-rec="${r.id}" data-v="no">Descartar</button>`}</div></div>`}).join("");
+  el.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>{recState[b.dataset.rec]=b.dataset.v||undefined;renderRecs()});
+}
+
+// =================== INVENTARIO ===================
+const pulpaDia=LOCALES.map((_,l)=>sum(ORD.filter(o=>o.l===l).map(o=>PROD[o.p].pulpa))/30/1000);
+const INS=[
+  {n:"Pulpa de açaí",u:"kg",stock:[38,52],dia:pulpaDia,col:"#7B45A6"},
+  {n:"Granola",u:"kg",stock:[14,9],dia:[1.9,2.6],col:"#C9954C"},
+  {n:"Plátano",u:"kg",stock:[11,15],dia:[2.4,3.1],col:"#F2C94C"},
+  {n:"Frutilla",u:"kg",stock:[4,5],dia:[1.2,1.6],col:"#E0405A"},
+  {n:"Crema de avellana",u:"kg",stock:[6,8],dia:[.35,.5],col:"#6B3E26"},
+  {n:"Mantequilla de maní",u:"kg",stock:[5,3],dia:[.4,.55],col:"#B77B3C"},
+  {n:"Envases 500 ml",u:"u.",stock:[420,380],dia:[26,36],col:"#8EC5FF"},
+  {n:"Cucharas",u:"u.",stock:[1200,900],dia:[70,95],col:"#9FE3D6"}
+];
+function cob(x,l){return x.stock[l]/x.dia[l]}
+function colCob(d){return d<3?"#F0655A":d<7?"#F2C94C":"#3DD9A0"}
+let conteo=null;
+function vInventario(){
+  const l=invLocal;
+  const jars=INS.map(x=>{const d=cob(x,l);const h=Math.min(100,d/14*100);return `<div class="jar"><div class="tube"><i style="height:${h}%;background:${x.col}"></i></div><div class="nm">${x.n}</div><div class="dd num" style="color:${colCob(d)}">${d.toFixed(1).replace(".",",")}<small> días</small></div><div class="st num">${x.stock[l].toLocaleString("es-CL")} ${x.u} en stock</div></div>`}).join("");
+  const steps=[["doc","Orden confirmada","02-sep"],["ship","Zarpe desde Brasil","09-sep"],["box","Arribo a puerto","19-sep"],["doc","Autorización sanitaria","en curso"],["snow","Bodega de frío","est. 26-sep"],["store","Reparto a locales","est. 27-sep"]];
+  const now=3;
+  // rotación: x = consumo semanal (normalizado), y = días de cobertura
+  const pts=INS.map(x=>{const cons=(x.dia[0]+x.dia[1])*7;const d=(x.stock[0]+x.stock[1])/(x.dia[0]+x.dia[1]);return {n:x.n,cons,d,col:x.col,u:x.u,val:cons}});
+  const sm=innerWidth<600,W=sm?360:620,H=sm?340:300,pl=sm?30:50,pr=sm?12:20,pt=20,pb=40;
+  const X=v=>pl+Math.log10(v)/Math.log10(2000)*(W-pl-pr), Y=d=>pt+(1-Math.min(d,20)/20)*(H-pt-pb);
+  // etiquetas sin choques: prueba arriba, abajo, derecha e izquierda y evita puntos y rótulos de zona
+  const P=pts.map(p=>({...p,x:X(p.cons),y:Y(p.d)}));
+  const placed=P.map(p=>[p.x-12,p.y-12,p.x+12,p.y+12]);
+  const qw1=(sm?"Lento y sobra":"Se mueve lento y sobra").length*7.2, qw2=(sm?"Rápido y falta pronto":"Se mueve rápido y falta pronto").length*7.2;
+  placed.push([pl+8,pt+4,pl+8+qw1,pt+20],[W-pr-8-qw2,H-pb-20,W-pr-8,H-pb-4]);
+  const hit=b=>placed.some(q=>b[0]<q[2]&&b[2]>q[0]&&b[1]<q[3]&&b[3]>q[1])||b[0]<pl+2||b[2]>W-2||b[1]<2;
+  const lab=P.sort((a,b)=>a.x-b.x).map(p=>{const w=p.n.length*7.2;
+    const C=[["middle",p.x,p.y-17],["middle",p.x,p.y+26],["start",p.x+15,p.y+4],["end",p.x-15,p.y+4],["middle",p.x,p.y-31],["middle",p.x,p.y+40]];
+    const bx=([a,lx,ly])=>{const x0=a==="end"?lx-w:a==="start"?lx:lx-w/2;return [x0,ly-11,x0+w,ly+3]};
+    let c=C.find(c=>!hit(bx(c)))||C[0];placed.push(bx(c));return {...p,a:c[0],lx:c[1],ly:c[2]}});
+  const merma=[["Plátano",.12],["Frutilla",.09],["Kiwi",.04],["Arándano",.03]];
+  return `<section id="i-hoy" style="margin-top:0"><div class="sh"><h2>Stock hoy</h2><div class="seg" role="group" aria-label="Local">${LOCALES.map((n,i)=>`<button data-inv="${i}" aria-pressed="${i===l}">${n}</button>`).join("")}</div></div>
+    <div class="freezer"><div class="fh"><b>${LOCALES[l]} · cuántos días alcanza cada insumo</b><span class="temp">Cámara −18 °C</span></div><div class="jars">${jars}</div>
+      <div class="leg" style="margin-top:14px;color:#B9CCE6"><span style="--c:#F0655A">menos de 3 días</span><span style="--c:#F2C94C">3 a 7 días</span><span style="--c:#3DD9A0">más de 7 días</span></div></div>
+    <div class="note">Los días se calculan solos con lo que se vende: cada bowl descuenta su porción de pulpa e insumos.</div></section>
+
+  <section id="i-lote"><div class="sh"><h2>Lote de açaí en camino</h2><span class="n">1.200 kg · llegada estimada 26-sep</span></div>
+    <div class="card bd"><div class="timeline">${steps.map((s,i)=>`<div class="tstep ${i<now?"done":i===now?"now":""}"><div class="ic">${I[s[0]]}</div><div><b>${s[1]}</b><br><small>${s[2]}</small></div></div>`).join("")}</div>
+    <div class="note">Con el stock actual y el lote en camino, la pulpa cubre ${Math.round((INS[0].stock[0]+INS[0].stock[1]+1200)/(pulpaDia[0]+pulpaDia[1]))} días. El agente avisa si alguna etapa se atrasa.</div></div></section>
+
+  <section id="i-rot"><div class="sh"><h2>Rotación</h2><span class="n">qué se mueve rápido y qué está quieto</span></div>
+    <div class="card bd"><div class="tw"><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Rotación de insumos">
+      <rect x="${pl}" y="${pt}" width="${(W-pl-pr)/2}" height="${(H-pt-pb)/2}" fill="var(--warn-bg)"/><rect x="${pl+(W-pl-pr)/2}" y="${pt+(H-pt-pb)/2}" width="${(W-pl-pr)/2}" height="${(H-pt-pb)/2}" fill="var(--crit-bg)"/>
+      <text x="${pl+8}" y="${pt+16}" font-size="11" fill="var(--warn)" font-weight="700">${sm?"Lento y sobra":"Se mueve lento y sobra"}</text>
+      <text x="${W-pr-8}" y="${H-pb-8}" font-size="11" fill="var(--crit)" font-weight="700" text-anchor="end">${sm?"Rápido y falta pronto":"Se mueve rápido y falta pronto"}</text>
+      <line x1="${pl}" y1="${H-pb}" x2="${W-pr}" y2="${H-pb}" stroke="var(--line2)"/><line x1="${pl}" y1="${pt}" x2="${pl}" y2="${H-pb}" stroke="var(--line2)"/>
+      <text x="${(W)/2}" y="${H-10}" font-size="11" fill="var(--ink3)" text-anchor="middle">consumo semanal →</text>
+      <text x="${sm?10:14}" y="${(H)/2}" font-size="11" fill="var(--ink3)" text-anchor="middle" transform="rotate(-90 ${sm?10:14} ${H/2})">días de stock →</text>
+      ${lab.map(p=>`<g><circle cx="${p.x}" cy="${p.y}" r="10" fill="${p.col}" stroke="var(--surface)" stroke-width="2"/><text x="${p.lx}" y="${p.ly}" font-size="11" fill="var(--ink)" text-anchor="${p.a}" font-weight="600">${p.n}</text></g>`).join("")}
+    </svg></div></div></section>
+
+  <section id="i-merma"><div class="sh"><h2>Merma de fruta</h2><span class="n">meta 5 %</span></div>
+    <div class="card bd hb">${merma.map(m=>`<div class="hbr"><span>${m[0]}</span><div class="tr" style="position:relative"><i style="width:${m[1]/.15*100}%;background:${m[1]>.05?"var(--crit)":"var(--ok)"}"></i></div><span class="v num">${pc(m[1])}</span></div>`).join("")}
+    <div class="note">El plátano y la frutilla superan la meta. El agente sugiere comprarlos en dos entregas por semana.</div></div></section>
+
+  <section id="i-conteo"><div class="sh"><h2>Conteo semanal</h2><span class="n">2 minutos desde el teléfono</span></div>
+    <div class="demo-grid"><div class="phone"><div class="notch"><i></i></div><div class="formapp"><div class="hd">Conteo · ${LOCALES[l]}<small>Domingo al cierre</small></div><div class="body" id="cnt"></div><div class="foot"><button id="cntSend">Enviar conteo</button></div></div></div>
+      <div class="side"><div class="agentnote" id="cntMsg"><b>Pruébalo:</b> ajusta las cantidades y envía. El sistema compara lo contado con lo que debería haber según las ventas y muestra la diferencia.</div></div></div></section>
+
+  <section id="i-agente"><div class="sh"><h2>Agente de reposición</h2><span class="n">propone el pedido, tú apruebas</span></div>
+    <div class="card" id="repo"></div></section>`;
+}
+function renderConteo(){
+  const el=$("#cnt"); if(!el) return; const l=invLocal;
+  if(!conteo) conteo=INS.map(x=>x.stock[l]);
+  el.innerHTML=INS.map((x,i)=>`<div class="counter"><div>${x.n}<div style="font-size:11px;color:#888">${x.u}</div></div><div class="ctl"><button data-c="${i}:-">−</button><b class="num">${conteo[i]}</b><button data-c="${i}:+">+</button></div></div>`).join("");
+  el.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{const [i,s]=b.dataset.c.split(":");const step=INS[i].u==="un"?10:1;conteo[i]=Math.max(0,conteo[i]+(s==="+"?step:-step));renderConteo()});
+  $("#cntSend").onclick=()=>{const dif=INS.map((x,i)=>[x.n,conteo[i]-x.stock[l],x.u]).filter(d=>d[1]!==0);$("#cntMsg").innerHTML=dif.length?`<b>Conteo recibido.</b> Diferencias con lo esperado según las ventas:<ul style="margin:6px 0 0;padding-left:18px">${dif.map(d=>`<li>${esc(d[0])}: ${d[1]>0?"+":""}${d[1]} ${d[2]}</li>`).join("")}</ul><div style="margin-top:6px">El agente registra la diferencia como merma o ajuste y recalcula los días de stock.</div>`:`<b>Conteo recibido.</b> Todo cuadra con lo esperado según las ventas.`};
+}
+function renderRepo(){
+  const el=$("#repo"); if(!el) return; const l=invLocal;
+  const low=INS.map(x=>({x,d:cob(x,l)})).filter(o=>o.d<7).sort((a,b)=>a.d-b.d);
+  el.innerHTML=low.map(({x,d})=>{const q=Math.ceil(x.dia[l]*10);const s=recState["r"+x.n];return `<div class="rec ${s==="ok"?"ok":s==="no"?"no":""}"><div class="t">Reponer ${esc(x.n)} en ${LOCALES[l]}: ${q.toLocaleString("es-CL")} ${x.u}</div><div class="why">Quedan ${d.toFixed(1).replace(".",",")} días de stock. Con ${q.toLocaleString("es-CL")} ${x.u} se cubren 10 días de venta.</div><div class="acts">${s?`<span class="pill ${s==="ok"?"p-ok":"p-warn"}">${s==="ok"?"Pedido enviado al proveedor":"Descartado"}</span><button class="btn sm" data-rp="${x.n}" data-v="">Deshacer</button>`:`<button class="btn pri sm" data-rp="${x.n}" data-v="ok">Aprobar pedido</button><button class="btn sm" data-rp="${x.n}" data-v="no">Descartar</button>`}</div></div>`}).join("")||`<div class="bd muted">Todo el stock cubre más de 7 días.</div>`;
+  el.querySelectorAll("[data-rp]").forEach(b=>b.onclick=()=>{recState["r"+b.dataset.rp]=b.dataset.v||undefined;renderRepo()});
+}
+
+
+// =================== CÓMO SE CONECTA ===================
+const ARW=`<div class="farrow" aria-hidden="true">${'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M6 14l6 6 6-6"/></svg>'}</div>`;
+function flow(nodes){return `<div class="flow">${nodes.map(n=>`<div class="fnode"><div class="fi2" style="background:${n[0]}">${I[n[1]]}</div><div><span class="who3">${n[2]}</span><b>${n[3]}</b><small>${n[4]}</small></div></div>`).join(ARW)}</div>`}
+const CX={
+ finanzas:{intro:"Las ventas se registran donde ya se registran hoy. El sistema las recoge solo, las ordena y el agente las lee cada mañana.",
+  nodes:[["var(--ink3)","pos","En el local","Caja de cada local","Cada venta queda registrada como siempre."],["var(--ic-fin)","db","Todos los días","Base de datos de Guzza","Las ventas del local y de las apps de delivery llegan solas, por conexión directa."],["var(--acai2)","bot","Cada mañana","Agente financiero","Revisa ventas, márgenes y comisiones, y detecta lo que se sale de lo normal."],["var(--ok)","dash","Para el dueño","Panel y resumen por WhatsApp","Todo el negocio en una pantalla y un resumen a las 8:00."]],
+  need:["Acceso de lectura a la caja de cada local","Autorización para conectar las apps de delivery","Opcional: compras declaradas en el SII, que entran solas al costo y al inventario"],
+  safe:["Nada se carga a mano: todo llega por conexión directa","Si una conexión falla, el agente avisa y los datos se completan después","Los datos son de Guzza y se pueden descargar cuando quieran"]},
+ clientes:{intro:"El cliente habla con Guzza donde ya está: Instagram, WhatsApp y Google. Los agentes responden con el tono de la marca y todo termina en el local y en el control financiero.",
+  nodes:[["var(--ig2)","star","Donde está el cliente","Instagram y Google","Comentarios, mensajes y reseñas llegan a un solo lugar."],["var(--acai2)","bot","Al instante","Agentes de Guzza","Responden, muestran la carta y llevan al pedido. Si algo requiere a una persona, avisan al equipo."],["#128C7E","phone","Pedido","WhatsApp oficial de Guzza","El cliente arma su bowl y paga con link, sin comisión de app."],["var(--ok)","pos","En el local","Pantalla del local","El pedido pagado llega con código y hora de retiro, y suma un sello."]],
+  need:["Cuenta profesional de Instagram vinculada a Meta","Un número de WhatsApp para la API oficial de Meta","Acceso de administrador al perfil de Google","Cuenta para cobrar con link de pago"],
+  safe:["Usa las conexiones oficiales de Meta y Google, sin trucos que arriesguen la cuenta","Mensajes promocionales solo a clientes que dieron su permiso","El contenido de la marca sigue en manos de su equipo; el agente se ocupa de responder y convertir"]},
+ inventario:{intro:"El encargado cuenta en su teléfono, el sistema cruza el conteo con lo vendido y el agente avisa antes de que algo falte.",
+  nodes:[["var(--ic-inv)","phone","Domingo al cierre","Conteo desde el teléfono","El encargado de cada local cuenta en 2 minutos, sin instalar nada."],["var(--ic-fin)","db","Al instante","Cruce con las ventas","Cada bowl vendido descuenta su porción. La diferencia con el conteo es la merma."],["var(--acai2)","bot","Cada día","Agente de reposición","Calcula los días que quedan de cada insumo y propone el pedido."],["var(--ok)","ok","El dueño decide","Aprobar y pedir","Con un toque se aprueba y el pedido sale al proveedor."]],
+  need:["Lista de insumos y cuánto usa cada producto","Quién cuenta en cada local","Datos de contacto de los proveedores"],
+  safe:["Cada conteo queda con fecha, hora y quién lo hizo","Nada se pide sin la aprobación del dueño","El inventario alimenta el costo real en el control financiero"]}
+};
+function vConecta(k){const c=CX[k];if(!c)return "";
+ return `<section id="x-conecta"><div class="sh"><h2>Cómo se conecta</h2><span class="n">de dónde sale cada dato</span></div>
+  <p class="muted" style="margin:0 0 14px;max-width:70ch">${c.intro}</p>${flow(c.nodes)}
+  <div class="conn-g"><div class="card"><h4>Lo que se necesita de Guzza</h4><ul>${c.need.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+  <div class="card"><h4>Lo que queda resguardado</h4><ul>${c.safe.map(x=>`<li>${x}</li>`).join("")}</ul></div></div></section>`}
+
+// =================== FRANQUICIA ===================
+/*FRI*/const FRI={"capex": [["Obra y habilitación del local (30 m², estándar de centro comercial)", 24800000, "est", "Estimación ajustada para que la inversión total quede en ~$50 M, referencia de mercado para 30 m²"], ["Mobiliario, letrero y diseño de marca", 4000000, "est", "Estimación"], ["2 congeladores industriales 400 L", 1737226, "dato", "La Casita, congelador 2 puertas 400 L Ventus $1.033.650 c/IVA"], ["Mesón refrigerado para toppings (3 puertas)", 979000, "dato", "Comercial Franklin, mesón saladette 3 puertas $979.000 + IVA"], ["Vitrina refrigerada 1,2 m (bebidas)", 470590, "dato", "Comercial Franklin, vitrina Gastromaq 1,2 m $470.590 + IVA"], ["2 licuadoras industriales 2 L", 536722, "dato", "La Casita, licuadora industrial Skymsen 2 L $319.350 c/IVA"], ["Caja, tablet e impresora", 600000, "est", "Estimación"], ["Permisos: resolución sanitaria, patente, proyecto eléctrico", 1500000, "est", "Estimación; aranceles SEREMI y municipio según proyecto"], ["Garantía de arriendo (2 meses)", 4400000, "sup", "Supuesto: 2 × arriendo mensual"], ["Stock inicial y capital de trabajo", 3000000, "est", "Estimación: primer lote de insumos y caja inicial"], ["Derecho de entrada a la franquicia", 8000000, "sup", "Supuesto: lo define Guzza"]], "opex_fijo": [["Personal: 2 vendedoras + 1 encargada (con 6 % costo empleador)", 2279000, "sup", "Sueldo mínimo $553.553 (dato, Ley 21.751); sueldos supuestos sobre el mínimo; costo empleador ~6 % (Legacont)"], ["Arriendo y gastos comunes (30 m² en centro comercial)", 2200000, "sup", "Supuesto ~1,8 UF/m²; referencia: arriendos en malls hasta 5 UF/m²"], ["Luz, agua, internet", 450000, "est", "Estimación (congeladores 24 h)"], ["Marketing local", 300000, "sup", "Supuesto"], ["Caja con API y módulo de delivery", 62000, "dato", "Referencia Fudo Chile jun-2026: $52.500 + $9.500 + IVA"], ["Contador, sistemas y otros", 300000, "sup", "Supuesto; incluye el sistema de gestión y agentes"]], "opex_pct": [["Insumos (pulpa, toppings, envases)", 0.38, "sup", "Escenario base: 38 %, cercano al 37 % que muestra el sistema"], ["Comisiones de apps de delivery y link de pago", null, "sis", "Sale del sistema: comisión de cada venta por canal"], ["Regalía a Guzza", 0.05, "ref", "Referencia gastronomía 3 % a 6 % de la venta (RedFranquicias)"], ["Fondo de marketing de la marca", 0.02, "ref", "Referencia 1 % a 3 % de la venta (RedFranquicias)"], ["Pagos con tarjeta en el local", 0.015, "sup", "Supuesto"]], "modelo": {"tasa": 0.12, "tasa_fuente": "TPM 4,5 % del Banco Central (08-09-2026) más un premio por riesgo de una pyme", "anios": 5, "ramp": 0.75, "crec": 0.03, "recupero": 7400000, "impuesto": 0.25, "no_depreciable": 15400000, "impuesto_fuente": "Impuesto de primera categoría 25 %; depreciación lineal 5 años de obra y equipos (no se deprecian garantía, stock ni derecho de entrada)", "venta_base": "Local del mall (promedio mensual de 12 meses)", "ref_inversion": [49800000, 58800000], "ref_fuente": "Açaí Concept Chile: desde $49,8 M (30 m²) y $58,8 M (50 m²); utilidad declarada $4,5 M a $8,5 M al mes (dato del franquiciador)"}, "capex_total": 50023538, "fijo_total": 5591000};/*FRI*/
+const MES=["oct","nov","dic","ene","feb","mar","abr","may","jun","jul","ago","sep"];
+const SEASON=[.95,1.0,1.15,1.25,1.22,1.08,.92,.85,.80,.84,.86,.93];
+const TAGS={dato:["p-ok","dato"],ref:["p-acai","referencia"],est:["p-warn","estimación"],sup:["p-crit","supuesto"],sis:["p-info","del sistema"]};
+const tag=k=>`<span class="pill ${TAGS[k][0]}">${TAGS[k][1]}</span>`;
+let simVenta=null, simCapex=null;
+function franq(){
+  const L=LOCALES.map((nom,i)=>{const a=agg(o=>o.l===i);const m=MES.map((_,k)=>a.venta*SEASON[k]/SEASON[11]*Math.pow(1.012,k-11));return {nom,a,m,anual:sum(m)}});
+  const T=agg(()=>true);
+  const anualLocal=sum(L.map(x=>x.anual))/L.length;
+  const crec=L.map(x=>x.m[11]/SEASON[11]/(x.m[0]/SEASON[0])-1);
+  return {L,T,ins:T.cost/T.venta,cm:T.com/T.venta,mr:T.margen/T.venta,anualLocal,mesLocal:anualLocal/12,crec};
+}
+// Modelo del inversionista: flujo antes de impuestos, 5 años
+function modelo(venta,capex){
+  const F=franq(), M=FRI.modelo;
+  const pct=[FRI.opex_pct[0][1]??F.ins,F.cm,...FRI.opex_pct.slice(2).map(x=>x[1])];
+  const pv=sum(pct), fijo=FRI.fijo_total;
+  const eb=v=>v*(1-pv)-fijo;
+  const vAnio=t=>t===1?venta*M.ramp:venta*Math.pow(1+M.crec,t-1);
+  const tax=M.impuesto||0, dep=Math.max(0,capex-(M.no_depreciable||0))/M.anios;
+  const neto=e=>e-Math.max(0,(e-dep)*tax);            // flujo anual después de impuestos
+  const netoMes=e=>e-Math.max(0,(e-dep/12)*tax);       // flujo mensual después de impuestos
+  const flujos=[-capex];for(let t=1;t<=M.anios;t++)flujos.push(neto(12*eb(vAnio(t)))+(t===M.anios?(M.recupero||0):0));
+  const van=r=>flujos.reduce((s,f,t)=>s+f/Math.pow(1+r,t),0);
+  let tir=null;if(van(-0.99)>0&&van(5)<0){let lo=-0.99,hi=5;for(let i=0;i<200;i++){const mid=(lo+hi)/2;van(mid)>0?lo=mid:hi=mid}tir=(lo+hi)/2}
+  let acc=-capex,pay=null;for(let m=1;m<=M.anios*12;m++){acc+=netoMes(eb(vAnio(Math.ceil(m/12))));if(acc>=0){pay=m;break}}
+  return {pct,pv,fijo,ebMes:eb(venta),ebMes1:eb(venta*M.ramp),flujos,van:van(M.tasa),tir,pay,margen:eb(venta)/venta};
+}
+function vFranquicia(){
+  const F=franq(), M=FRI.modelo;
+  if(simVenta===null){simVenta=F.L[1].anual/12;simCapex=FRI.capex_total}
+  const R=modelo(simVenta,simCapex);
+  const maxM=Math.max(...MES.map((_,k)=>sum(F.L.map(x=>x.m[k]))));
+  const col=["var(--acai2)","var(--ic-fra)"];
+  const opRows=[["Venta mensual del local",simVenta,"sis",null],...FRI.opex_pct.map((x,i)=>[x[0],-simVenta*R.pct[i],x[2],R.pct[i]]),...FRI.opex_fijo.map(x=>[x[0],-x[1],x[2],null])];
+  return `<section id="r-resumen" style="margin-top:0"><div class="inv-hero">
+    <div class="ey">Panel para inversionistas · un local franquiciado</div>
+    <h2>¿Cuánto se invierte, cuánto deja y en cuánto se recupera?</h2>
+    <p>Venta y comisiones salen del sistema de Guzza. Insumos, inversión y gastos están calculados con precios de mercado de 2026. Con 9 a 12 meses de datos reales, el panel se actualiza solo.</p>
+    <div class="ik">
+      <div><b>${mill(simCapex)}</b><span>Inversión para abrir (CAPEX)</span></div>
+      <div><b id="kEb">${mill(R.ebMes)}</b><span>Resultado mensual del local (EBITDA)</span></div>
+      <div><b id="kPay">${R.pay?R.pay+" meses":"más de 5 años"}</b><span>Recuperación de la inversión</span></div>
+      <div><b id="kTir">${R.tir===null?"—":pc(R.tir)}</b><span>TIR a 5 años, después de impuestos</span></div>
+      <div><b id="kVan">${mill(R.van)}</b><span>VAN al ${pc(M.tasa)}</span></div>
+    </div>
+</div></section>
+
+  <section id="r-meses"><div class="sh"><h2>12 meses de ventas de Guzza</h2><span class="n">del sistema de ventas</span></div>
+    <div class="card bd"><div class="leg">${F.L.map((x,i)=>`<span style="--c:${col[i]}">${x.nom} · ${mill(x.anual)} al año</span>`).join("")}</div>
+      <div class="months">${MES.map((m,k)=>`<div class="mc" title="${m}: ${clp(sum(F.L.map(x=>x.m[k])))}">${F.L.slice().reverse().map((x,j)=>`<i style="height:${(x.m[k]/maxM*100).toFixed(1)}%;background:${col[F.L.length-1-j]}"></i>`).join("")}</div>`).join("")}</div>
+      <div class="mlab">${MES.map(m=>`<span>${m}</span>`).join("")}</div>
+      <div class="note">Local del mall: ${mill(F.L[1].anual)} al año (${mill(F.L[1].anual/12)} al mes), la base del modelo. El verano vende más y el invierno menos; con 12 meses se ve el año completo.</div></div></section>
+
+  <section id="r-capex"><div class="sh"><h2>Inversión para abrir (CAPEX)</h2><span class="n">local de 30 m² · montos netos</span></div>
+    <div class="card tw"><table style="min-width:520px"><tr><th>Ítem</th><th class="r">Monto</th></tr>
+      ${FRI.capex.map(x=>`<tr><td>${esc(x[0])}</td><td class="r num">${clp(x[1])}</td></tr>`).join("")}
+      <tr><td><b>Total</b></td><td class="r num"><b>${clp(FRI.capex_total)}</b></td></tr></table></div>
+    <div class="note">Para comparar: en Chile, otras franquicias de açaí parten desde $49,8 M para un local de 30 m².</div></section>
+
+  <section id="r-opex"><div class="sh"><h2>Gastos mensuales (OPEX) y resultado</h2><span class="n">escenario base · local en centro comercial</span></div>
+    <div class="card tw"><table style="min-width:520px"><tr><th>Concepto</th><th class="r">Monto</th><th class="r">% venta</th></tr>
+      ${opRows.map(r=>`<tr><td>${esc(r[0])}</td><td class="r num ${r[1]<0?"":""}">${r[1]<0?"−":""}${clp(Math.abs(r[1]))}</td><td class="r num">${pc(Math.abs(r[1])/simVenta,1)}</td></tr>`).join("")}
+      <tr><td><b>Resultado del local (EBITDA)</b></td><td class="r num"><b style="color:${R.ebMes>=0?"var(--ok)":"var(--crit)"}">${R.ebMes<0?"−":""}${clp(Math.abs(R.ebMes))}</b></td><td class="r num"><b>${pc(R.margen,1)}</b></td></tr></table></div>
+    <div class="note">El resultado mensual es antes de impuestos. La recuperación, la TIR y el VAN se calculan después del impuesto de primera categoría (${pc(M.impuesto)}). El primer año se proyecta al ${pc(M.ramp)} de la venta madura; después crece ${pc(M.crec)} al año. Al quinto año se recuperan la garantía y el capital de trabajo.</div></section>
+
+  <section id="r-kpi"><div class="sh"><h2>Simulador del inversionista</h2><span class="n">mueve la venta o la inversión</span></div>
+    <div class="g2">
+      <div class="card bd sim">
+        <label class="small muted" for="simV">Venta mensual del local</label>
+        <input type="range" id="simV" min="8000000" max="30000000" step="500000" value="${simVenta}"><div class="small"><b id="simVv">${mill(simVenta)}</b></div>
+        <label class="small muted" for="simC">Inversión para abrir</label>
+        <input type="range" id="simC" min="30000000" max="90000000" step="1000000" value="${simCapex}"><div class="small"><b id="simCv">${mill(simCapex)}</b></div>
+        <div class="flows" id="flows"></div>
+        <div class="note">Barras: flujo de cada año después de impuestos (año 0 = inversión).</div></div>
+      <div class="card bd chk">
+        <div><i>1</i><span><b>Recuperación de la inversión</b><small>Meses hasta que lo ganado iguala lo invertido. Mientras más corto, menos riesgo.</small></span></div>
+        <div><i>2</i><span><b>TIR (tasa interna de retorno)</b><small>La rentabilidad anual del proyecto. Se compara con lo que rendiría la plata en otra alternativa.</small></span></div>
+        <div><i>3</i><span><b>VAN (valor actual neto)</b><small>Cuánto vale hoy todo lo que el local va a generar, descontado al ${pc(M.tasa)}. Si es positivo, el proyecto rinde más que esa tasa.</small></span></div>
+        <div><i>4</i><span><b>EBITDA</b><small>Lo que deja el local cada mes antes de impuestos, intereses y depreciación.</small></span></div>
+        <div class="note">Tasa de descuento ${pc(M.tasa)}: tasa del Banco Central más un premio por riesgo.</div>
+      </div></div></section>
+
+  <section id="r-datos"><div class="sh"><h2>Datos verificables</h2><span class="n">lo que hace creíble cada cifra</span></div>
+    <div class="card bd chk">
+      <div><i>✓</i><span><b>Ventas registradas día a día</b><small>Vienen de la caja de cada local y de las apps de delivery, no de una planilla.</small></span></div>
+      <div><i>✓</i><span><b>Cruzadas con el SII</b><small>Lo vendido se compara con lo declarado, mes a mes.</small></span></div>
+      <div><i>✓</i><span><b>Inventario contado cada semana</b><small>El consumo real se compara con lo que debió usarse según las ventas.</small></span></div>
+      <div><i>✓</i><span><b>Inversión con precios reales de mercado</b><small>Equipos, caja y sueldos con valores vigentes; se ajustan con las cotizaciones de cada local.</small></span></div>
+      <div><i>✓</i><span><b>Nada se edita sin dejar rastro</b><small>Cada cambio queda con fecha y autor, listo para una revisión externa.</small></span></div>
+    </div></section>`;
+}
+function bindFranq(){
+  const v=$("#simV"),c=$("#simC");if(!v)return;
+  const up=e=>{if(e){simVenta=+v.value;simCapex=+c.value}const R=modelo(simVenta,simCapex);
+    $("#simVv").textContent=mill(simVenta);$("#simCv").textContent=mill(simCapex);
+    $("#kEb").textContent=mill(R.ebMes);$("#kPay").textContent=R.pay?R.pay+" meses":"más de 5 años";$("#kTir").textContent=R.tir===null?"—":pc(R.tir);$("#kVan").textContent=mill(R.van);
+    const mx=Math.max(...R.flujos.map(Math.abs));
+    $("#flows").innerHTML=R.flujos.map((f,t)=>`<div class="fl"><span>${t===0?"Inv.":"Año "+t}</span><div class="fb"><i class="${f<0?"neg":"pos"}" style="width:${(Math.abs(f)/mx*100).toFixed(1)}%"></i></div><b class="num">${f<0?"−":""}${mill(Math.abs(f))}</b></div>`).join("")};
+  v.oninput=up;c.oninput=up;
+  const re=()=>{const y=scrollY;render();scrollTo({top:y})};v.onchange=re;c.onchange=re;up()}
 
 // =================== RENDER ===================
 function render(){
-  nav();
+  topbar();
   const v=$("#view");
-  v.innerHTML= tab==="panel"?vPanel(): tab==="agente"?vAgente(): tab==="whatsapp"?vWA(): tab==="propuesta"?vPropuesta(): vInicio();
+  v.innerHTML= app==="finanzas"?vFinanzas()+vConecta(app): app==="clientes"?vClientes()+vConecta(app): app==="inventario"?vInventario()+vConecta(app): app==="franquicia"?vFranquicia(): vInicio();
   v.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
-  v.querySelectorAll("[data-loc]").forEach(b=>b.onclick=()=>{filLocal=+b.dataset.loc;render()});
-  v.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>{recState[b.dataset.rec]=b.dataset.v||undefined;const y=window.scrollY;render();window.scrollTo({top:y})});
+  v.querySelectorAll("[data-loc]").forEach(b=>b.onclick=()=>{filLocal=+b.dataset.loc;const y=scrollY;render();scrollTo({top:y})});
+  v.querySelectorAll("[data-inv]").forEach(b=>b.onclick=()=>{invLocal=+b.dataset.inv;conteo=null;const y=scrollY;render();scrollTo({top:y})});
   const qa=QA();
-  v.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{v.querySelectorAll("[data-q]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");$("#ans").innerHTML=`<div class="who">Agente Guzza</div>${esc(qa[+b.dataset.q].a)}`});
-  if(tab==="whatsapp"){ if(!WA.msgs.length) waReset(); renderWA(); }
+  v.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{v.querySelectorAll("[data-q]").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");$("#ans").innerHTML=`<div class="who">Agente financiero</div>${esc(qa[+b.dataset.q].a)}`});
+  if(app==="clientes"){IG={step:0,msgs:[]};igRender();igFlow(0);if(!WA.msgs.length)waReset();renderWA();renderRev();renderStamps();renderQR();renderRecs();
+    $("#stampBtn").onclick=()=>{stamps=stamps>=10?2:stamps+1;renderStamps()};}
+  if(app==="inventario"){renderConteo();renderRepo();}
+  if(app==="franquicia")bindFranq();
 }
-render();
+route(); render();
 </script>
 </body>
 </html>
