@@ -370,6 +370,8 @@ footer{margin-top:34px;font-size:11px;color:var(--ink3)}
 .fl b{text-align:right;font-size:12px}
 .chk i{font-size:12px}
 .chk>.note{display:block}
+tr.grp td{font:700 11px Montserrat,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);background:var(--surface2)}
+tr.sub td{font-weight:700;border-top:1px solid var(--line2)}
 .sim{align-content:start}
 </style>
 </head>
@@ -478,7 +480,7 @@ function vInicio(){
   return `<div class="hero">
     <div class="ey">Perrot Tech · agentes de IA y sistemas a la medida</div>
     <h1>Más clientes, mejores decisiones y un negocio listo para crecer</h1>
-    <p>Tres apps que trabajan juntas para Guzza. Agentes de IA atienden, leen y alertan todos los días, y el dueño ve todo en un solo lugar.</p>
+    <p>Tres apps que trabajan juntas para Guzza, y un panel para crecer con franquicias. Agentes de IA atienden, leen y alertan todos los días, y el dueño ve todo en un solo lugar.</p>
     <svg class="berries" viewBox="0 0 200 200" aria-hidden="true"><circle cx="70" cy="90" r="34" fill="#6B3597"/><circle cx="120" cy="70" r="28" fill="#5A2A85"/><circle cx="130" cy="125" r="38" fill="#7B45A6"/><circle cx="78" cy="148" r="24" fill="#5A2A85"/><circle cx="62" cy="82" r="7" fill="#fff" opacity=".25"/><circle cx="116" cy="112" r="9" fill="#fff" opacity=".2"/><path d="M118 42c8-14 22-20 34-18-4 12-16 20-30 22" fill="#3DD9C0"/></svg>
   </div>
   <section><div class="sh"><h2>Elige una app</h2><span class="n">cada una funciona sola y se conecta con las otras</span></div>
@@ -551,7 +553,7 @@ function vFinanzas(){
         <div class="chat"><div class="msg them">Buenos días. Resumen de ayer, martes:
 Ventas: ${clp(sum(A.O.filter(o=>o.d===22).map(o=>PROD[o.p].precio)))} (+8 % vs. el martes pasado)
 Mejor local: Mall La Portada
-Margen del día: ${pc(A.margen/A.venta)}
+Margen acumulado del mes: ${pc(A.margen/A.venta)}
 <span class="tm">08:00</span></div>
         <div class="msg them">Dos cosas para revisar:
 1. La app de delivery fue el ${pc(app1.venta/A.venta)} de las ventas; sus comisiones van en ${mill(app1.com)} este mes.
@@ -572,8 +574,8 @@ function QA(){
   const g=PROD.map((p,i)=>({p,m:margenUnit(i,0)/p.precio})).sort((a,b)=>b.m-a.m);
   return [
     {q:"¿Qué producto deja más margen?",a:`En el local, el ${g[0].p.nombre.toLowerCase()} deja ${pc(g[0].m)} de su precio; el que menos deja es el ${g[g.length-1].p.nombre.toLowerCase()} (${pc(g[g.length-1].m)}).`},
-    {q:"¿Cuánto pagamos en comisiones?",a:`${clp(app.com)} a la app de delivery este mes, sobre ${mill(app.venta)} vendidos por ese canal. Si un 20 % pasara a retiro por WhatsApp, quedarían ${clp(app.com*.2)} más al mes.`},
-    {q:"¿Qué local rinde mejor?",a:`${LOCALES[L[1].venta>L[0].venta?1:0]} vende más (${mill(Math.max(L[0].venta,L[1].venta))}). Margen: Llacolen ${pc(L[0].margen/L[0].venta)}, La Portada ${pc(L[1].margen/L[1].venta)}.`}
+    {q:"¿Cuánto pagamos en comisiones?",a:`${clp(app.com)} a la app de delivery este mes, sobre ${mill(app.venta)} vendidos por ese canal. Si un 20 % de esos pedidos pasara a retiro por WhatsApp, quedarían ${clp(app.venta*.2*(S.comisionApp-S.comisionWeb))} más al mes, ya descontado el link de pago.`},
+    {q:"¿Qué local rinde mejor?",a:`${LOCALES[L[1].venta>L[0].venta?1:0]} vende más (${mill(Math.max(L[0].venta,L[1].venta))}). Margen: Llacolen ${pc(L[0].margen/L[0].venta)}, Mall La Portada ${pc(L[1].margen/L[1].venta)}.`}
   ];
 }
 
@@ -655,7 +657,7 @@ function igFlow(n){document.querySelectorAll("#igFlow .fi").forEach((x,i)=>x.cla
 function igAct(a){
   IG.msgs=IG.msgs.filter(m=>!m.qr);
   if(a.startsWith("p")){const p=PROD[+a.slice(1)];IG.msgs=IG.msgs.filter(m=>!m.carousel);IG.msgs.push({me:p.corto},{them:`¡Buena elección! El ${p.corto.toLowerCase()} está a ${clp(p.precio)}.\n¿Cómo lo quieres recibir?`},{qr:[["retiro","Retiro en local"],["wsp","Pedir por WhatsApp"],["delivery","A domicilio"]]});igFlow(4)}
-  else if(a==="retiro"||a==="wsp"){IG.msgs.push({me:a==="retiro"?"Retiro en local":"Pedir por WhatsApp"},{them:"Te abrí el WhatsApp de Guzza con tu bowl ya elegido. Lo armas en 1 minuto y lo pagas con link."},{them:"Y un regalo: únete al Guzza Club y parte con 2 sellos. Al décimo, tu bowl es gratis 💛"},{qr:[["club","Quiero mis 2 sellos"],["fin","Gracias"]]});igFlow(5)}
+  else if(a==="retiro"||a==="wsp"){IG.msgs.push({me:a==="retiro"?"Retiro en local":"Pedir por WhatsApp"},{them:a==="retiro"?"Te abrí el WhatsApp de Guzza con tu bowl elegido para retirarlo en el local. Lo terminas de armar en 1 minuto y lo pagas con link.":"Te abrí el WhatsApp de Guzza con tu bowl ya elegido. Lo terminas de armar en 1 minuto y lo pagas con link."},{them:"Y un regalo: únete al Guzza Club y parte con 2 sellos. Al décimo, tu bowl es gratis 💛"},{qr:[["club","Quiero mis 2 sellos"],["fin","Gracias"]]});igFlow(5)}
   else if(a==="delivery"){IG.msgs.push({me:"A domicilio"},{them:"Hacemos envío por app de delivery y también puedes pedir por WhatsApp para retiro en 15 minutos."},{qr:[["wsp","Pedir por WhatsApp"],["fin","Gracias"]]});igFlow(4)}
   else if(a==="club"){IG.msgs.push({me:"Quiero mis 2 sellos"},{them:"¡Listo, Cata! Ya tienes 2 de 10 sellos. Te aviso cuando te falte poco 💜"});}
   else if(a==="fin"){IG.msgs.push({me:"Gracias"},{them:"¡A ti! Que disfrutes tu Guzza 🍇"});}
@@ -706,7 +708,7 @@ function renderWA(){
 // --- Reseñas
 const REV=[
  {n:"Valentina R.",c:"#DD2A7B",s:5,t:"El mejor açaí de Antofa, súper fresco y la atención muy buena. El de maní es adictivo.",r:"¡Gracias, Valentina! Nos alegra que el de maní se haya ganado tu corazón 💜 Te esperamos pronto en el mall para el próximo."},
- {n:"Diego M.",c:"#1E5BFF",s:4,t:"Rico, pero el sábado en la tarde había mucha fila.",r:"Gracias, Diego. Los sábados en la tarde son nuestro peak; puedes pedir por WhatsApp y retirar sin fila en 15 minutos. ¡Te esperamos!"},
+ {n:"Diego M.",c:"#1E5BFF",s:4,t:"Rico, pero el sábado en la tarde había mucha fila.",r:"Gracias, Diego. Los sábados en la tarde son nuestra hora punta; puedes pedir por WhatsApp y retirar sin fila en 15 minutos. ¡Te esperamos!"},
  {n:"Camila S.",c:"#C7362B",s:2,t:"Mi pedido por delivery llegó derretido.",r:"Camila, lamentamos mucho lo de tu pedido. Te escribimos por interno para reponerlo. Ya revisamos el empaque para los envíos.",bad:true}
 ];
 let revState={};
@@ -735,9 +737,9 @@ function renderRecs(){
   const el=$("#recs"); if(!el) return;
   const R=[
     {id:"combo",t:"Bowl de la casa: granola + plátano",why:"Es la combinación más pedida del mes. Un bowl fijo acelera la fila en hora punta."},
-    {id:"martes",t:"Martes 16:00–18:00: 2x1 en smoothies",why:"Es la franja más baja de la semana. Llena horas vacías con el producto de menor costo."},
+    {id:"martes",t:"Martes 16:00–18:00: 2x1 en smoothies",why:"Llena horas vacías con el producto de menor costo."},
     {id:"club",t:"Mensaje a 84 clientes que no vuelven desde hace 30 días",why:"Todos inscritos en el Guzza Club con permiso para recibir mensajes. Oferta: sello doble esta semana."},
-    {id:"resena",t:"Pedir reseña a los clientes de los 46 pedidos del fin de semana",why:"Las reseñas recientes pesan más al elegir dónde comer."}
+    {id:"resena",t:"Pedir reseña a los clientes de los 46 pedidos del fin de semana",why:"Son las compras más recientes: su reseña suma de inmediato a la nota de Google."}
   ];
   el.innerHTML=R.map(r=>{const s=recState[r.id];return `<div class="rec ${s==="ok"?"ok":s==="no"?"no":""}"><div class="t">${esc(r.t)}</div><div class="why">${esc(r.why)}</div><div class="acts">${s?`<span class="pill ${s==="ok"?"p-ok":"p-warn"}">${s==="ok"?"Aprobado":"Descartado"}</span><button class="btn sm" data-rec="${r.id}" data-v="">Deshacer</button>`:`<button class="btn pri sm" data-rec="${r.id}" data-v="ok">Aprobar</button><button class="btn sm" data-rec="${r.id}" data-v="no">Descartar</button>`}</div></div>`}).join("");
   el.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>{recState[b.dataset.rec]=b.dataset.v||undefined;renderRecs()});
@@ -848,7 +850,7 @@ function vConecta(k){const c=CX[k];if(!c)return "";
   <div class="card"><h4>Lo que queda resguardado</h4><ul>${c.safe.map(x=>`<li>${x}</li>`).join("")}</ul></div></div></section>`}
 
 // =================== FRANQUICIA ===================
-/*FRI*/const FRI={"capex": [["Obra y habilitación del local (30 m², estándar de centro comercial)", 24800000, "est", "Estimación ajustada para que la inversión total quede en ~$50 M, referencia de mercado para 30 m²"], ["Mobiliario, letrero y diseño de marca", 4000000, "est", "Estimación"], ["2 congeladores industriales 400 L", 1737226, "dato", "La Casita, congelador 2 puertas 400 L Ventus $1.033.650 c/IVA"], ["Mesón refrigerado para toppings (3 puertas)", 979000, "dato", "Comercial Franklin, mesón saladette 3 puertas $979.000 + IVA"], ["Vitrina refrigerada 1,2 m (bebidas)", 470590, "dato", "Comercial Franklin, vitrina Gastromaq 1,2 m $470.590 + IVA"], ["2 licuadoras industriales 2 L", 536722, "dato", "La Casita, licuadora industrial Skymsen 2 L $319.350 c/IVA"], ["Caja, tablet e impresora", 600000, "est", "Estimación"], ["Permisos: resolución sanitaria, patente, proyecto eléctrico", 1500000, "est", "Estimación; aranceles SEREMI y municipio según proyecto"], ["Garantía de arriendo (2 meses)", 4400000, "sup", "Supuesto: 2 × arriendo mensual"], ["Stock inicial y capital de trabajo", 3000000, "est", "Estimación: primer lote de insumos y caja inicial"], ["Derecho de entrada a la franquicia", 8000000, "sup", "Supuesto: lo define Guzza"]], "opex_fijo": [["Personal: 2 vendedoras + 1 encargada (con 6 % costo empleador)", 2279000, "sup", "Sueldo mínimo $553.553 (dato, Ley 21.751); sueldos supuestos sobre el mínimo; costo empleador ~6 % (Legacont)"], ["Arriendo y gastos comunes (30 m² en centro comercial)", 2200000, "sup", "Supuesto ~1,8 UF/m²; referencia: arriendos en malls hasta 5 UF/m²"], ["Luz, agua, internet", 450000, "est", "Estimación (congeladores 24 h)"], ["Marketing local", 300000, "sup", "Supuesto"], ["Caja con API y módulo de delivery", 62000, "dato", "Referencia Fudo Chile jun-2026: $52.500 + $9.500 + IVA"], ["Contador, sistemas y otros", 300000, "sup", "Supuesto; incluye el sistema de gestión y agentes"]], "opex_pct": [["Insumos (pulpa, toppings, envases)", 0.38, "sup", "Escenario base: 38 %, cercano al 37 % que muestra el sistema"], ["Comisiones de apps de delivery y link de pago", null, "sis", "Sale del sistema: comisión de cada venta por canal"], ["Regalía a Guzza", 0.05, "ref", "Referencia gastronomía 3 % a 6 % de la venta (RedFranquicias)"], ["Fondo de marketing de la marca", 0.02, "ref", "Referencia 1 % a 3 % de la venta (RedFranquicias)"], ["Pagos con tarjeta en el local", 0.015, "sup", "Supuesto"]], "modelo": {"tasa": 0.12, "tasa_fuente": "TPM 4,5 % del Banco Central (08-09-2026) más un premio por riesgo de una pyme", "anios": 5, "ramp": 0.75, "crec": 0.03, "recupero": 7400000, "impuesto": 0.25, "no_depreciable": 15400000, "impuesto_fuente": "Impuesto de primera categoría 25 %; depreciación lineal 5 años de obra y equipos (no se deprecian garantía, stock ni derecho de entrada)", "venta_base": "Local del mall (promedio mensual de 12 meses)", "ref_inversion": [49800000, 58800000], "ref_fuente": "Açaí Concept Chile: desde $49,8 M (30 m²) y $58,8 M (50 m²); utilidad declarada $4,5 M a $8,5 M al mes (dato del franquiciador)"}, "capex_total": 50023538, "fijo_total": 5591000};/*FRI*/
+/*FRI*/const FRI={"capex": [["Obra y habilitación del local (30 m², local a la calle)", 15000000, "est", "Estimación ~$500.000 por m²; local a la calle, sin exigencias de terminación de mall"], ["Mobiliario, letrero y diseño de marca", 4000000, "est", "Estimación"], ["2 congeladores industriales 400 L", 1737226, "dato", "La Casita, congelador 2 puertas 400 L Ventus $1.033.650 c/IVA"], ["Mesón refrigerado para toppings (3 puertas)", 979000, "dato", "Comercial Franklin, mesón saladette 3 puertas $979.000 + IVA"], ["Vitrina refrigerada 1,2 m (bebidas)", 470590, "dato", "Comercial Franklin, vitrina Gastromaq 1,2 m $470.590 + IVA"], ["2 licuadoras industriales 2 L", 536722, "dato", "La Casita, licuadora industrial Skymsen 2 L $319.350 c/IVA"], ["Caja, tablet e impresora", 600000, "est", "Estimación"], ["Permisos: resolución sanitaria, patente, proyecto eléctrico", 1500000, "est", "Estimación; aranceles SEREMI y municipio según proyecto"], ["Garantía de arriendo (2 meses)", 2000000, "sup", "Supuesto: 2 × arriendo mensual"], ["Stock inicial y capital de trabajo", 3000000, "est", "Estimación: primer lote de insumos y caja inicial"], ["Derecho de entrada a la franquicia", 8000000, "sup", "Supuesto: lo define Guzza"]], "opex_fijo": [["Personal: 2 vendedoras + 1 encargada (con 6 % costo empleador)", 2279000, "sup", "Sueldo mínimo $553.553 (dato, Ley 21.751); sueldos supuestos sobre el mínimo; costo empleador ~6 % (Legacont)"], ["Arriendo (30 m², local a la calle)", 1000000, "sup", "Supuesto: local a la calle en Antofagasta, fuera de mall"], ["Luz, agua, internet", 200000, "est", "Estimación: ~500 kWh/mes de equipos de frío + agua e internet"], ["Caja con API y módulo de delivery", 62000, "dato", "Referencia Fudo Chile jun-2026: $52.500 + $9.500 + IVA"], ["Sistema de gestión", 150000, "sup", "Supuesto por local"], ["Contador y otros", 100000, "sup", "Contador de mercado para una SpA pequeña (mínimo $100.000)"]], "opex_pct": [["Insumos (pulpa, toppings, envases)", 0.33, "sup", "Escenario base: 33 %, dentro del rango del rubro (30 % a 40 %, Custo por Prato); con este valor, gastos fijos + insumos quedan bajo $8,5 M al mes"], ["Comisiones de apps de delivery y link de pago (mezcla real de canales)", null, "sis", "Sale del sistema: comisión de cada venta por canal"], ["Royalty a Guzza", 0.05, "ref", "Referencia gastronomía 3 % a 6 % de la venta (RedFranquicias)"], ["Fondo de marketing de la marca", 0.02, "ref", "Referencia 1 % a 3 % de la venta (RedFranquicias)"], ["Pagos con tarjeta en el local", 0.015, "sup", "Supuesto"]], "modelo": {"tasa": 0.12, "tasa_fuente": "TPM 4,5 % del Banco Central (08-09-2026) más un premio por riesgo de una pyme", "anios": 5, "ramp": 0.75, "crec": 0.03, "recupero": 5000000, "impuesto": 0.25, "no_depreciable": 13000000, "tope_costos": 8500000, "impuesto_fuente": "Impuesto de primera categoría 25 %; depreciación lineal 5 años de obra y equipos (no se deprecian garantía, stock ni derecho de entrada)", "venta_base": "Local a la calle (Llacolen, promedio mensual de 12 meses)", "ref_inversion": [49800000, 58800000], "ref_fuente": "Açaí Concept Chile: desde $49,8 M (30 m²) y $58,8 M (50 m²); utilidad declarada $4,5 M a $8,5 M al mes (dato del franquiciador)"}, "capex_total": 37823538, "fijo_total": 3791000};/*FRI*/
 const MES=["oct","nov","dic","ene","feb","mar","abr","may","jun","jul","ago","sep"];
 const SEASON=[.95,1.0,1.15,1.25,1.22,1.08,.92,.85,.80,.84,.86,.93];
 const TAGS={dato:["p-ok","dato"],ref:["p-acai","referencia"],est:["p-warn","estimación"],sup:["p-crit","supuesto"],sis:["p-info","del sistema"]};
@@ -864,7 +866,8 @@ function franq(){
 // Modelo del inversionista: flujo antes de impuestos, 5 años
 function modelo(venta,capex){
   const F=franq(), M=FRI.modelo;
-  const pct=[FRI.opex_pct[0][1]??F.ins,F.cm,...FRI.opex_pct.slice(2).map(x=>x[1])];
+  const cmBase=F.L[0].a.com/F.L[0].a.venta;
+  const pct=[FRI.opex_pct[0][1]??F.ins,cmBase,...FRI.opex_pct.slice(2).map(x=>x[1])];
   const pv=sum(pct), fijo=FRI.fijo_total;
   const eb=v=>v*(1-pv)-fijo;
   const vAnio=t=>t===1?venta*M.ramp:venta*Math.pow(1+M.crec,t-1);
@@ -875,15 +878,16 @@ function modelo(venta,capex){
   const van=r=>flujos.reduce((s,f,t)=>s+f/Math.pow(1+r,t),0);
   let tir=null;if(van(-0.99)>0&&van(5)<0){let lo=-0.99,hi=5;for(let i=0;i<200;i++){const mid=(lo+hi)/2;van(mid)>0?lo=mid:hi=mid}tir=(lo+hi)/2}
   let acc=-capex,pay=null;for(let m=1;m<=M.anios*12;m++){acc+=netoMes(eb(vAnio(Math.ceil(m/12))));if(acc>=0){pay=m;break}}
-  return {pct,pv,fijo,ebMes:eb(venta),ebMes1:eb(venta*M.ramp),flujos,van:van(M.tasa),tir,pay,margen:eb(venta)/venta};
+  return {pct,pv,fijo,equilibrio:fijo/(1-pv),ebMes:eb(venta),ebMes1:eb(venta*M.ramp),flujos,van:van(M.tasa),tir,pay,margen:eb(venta)/venta};
 }
 function vFranquicia(){
   const F=franq(), M=FRI.modelo;
-  if(simVenta===null){simVenta=F.L[1].anual/12;simCapex=FRI.capex_total}
+  if(simVenta===null){simVenta=F.L[0].anual/12;simCapex=FRI.capex_total}
   const R=modelo(simVenta,simCapex);
   const maxM=Math.max(...MES.map((_,k)=>sum(F.L.map(x=>x.m[k]))));
   const col=["var(--acai2)","var(--ic-fra)"];
-  const opRows=[["Venta mensual del local",simVenta,"sis",null],...FRI.opex_pct.map((x,i)=>[x[0],-simVenta*R.pct[i],x[2],R.pct[i]]),...FRI.opex_fijo.map(x=>[x[0],-x[1],x[2],null])];
+  const H=t=>["§"+t];
+  const opRows=[["Venta mensual del local",simVenta],H("Costos variables (suben y bajan con la venta)"),...FRI.opex_pct.map((x,i)=>[x[0],-simVenta*R.pct[i]]),["=Margen de contribución",simVenta*(1-R.pv)],H("Costos fijos (se pagan igual cada mes)"),...FRI.opex_fijo.map(x=>[x[0],-x[1]]),["=Total costos fijos",-R.fijo]];
   return `<section id="r-resumen" style="margin-top:0"><div class="inv-hero">
     <div class="ey">Panel para inversionistas · un local franquiciado</div>
     <h2>¿Cuánto se invierte, cuánto deja y en cuánto se recupera?</h2>
@@ -901,19 +905,19 @@ function vFranquicia(){
     <div class="card bd"><div class="leg">${F.L.map((x,i)=>`<span style="--c:${col[i]}">${x.nom} · ${mill(x.anual)} al año</span>`).join("")}</div>
       <div class="months">${MES.map((m,k)=>`<div class="mc" title="${m}: ${clp(sum(F.L.map(x=>x.m[k])))}">${F.L.slice().reverse().map((x,j)=>`<i style="height:${(x.m[k]/maxM*100).toFixed(1)}%;background:${col[F.L.length-1-j]}"></i>`).join("")}</div>`).join("")}</div>
       <div class="mlab">${MES.map(m=>`<span>${m}</span>`).join("")}</div>
-      <div class="note">Local del mall: ${mill(F.L[1].anual)} al año (${mill(F.L[1].anual/12)} al mes), la base del modelo. El verano vende más y el invierno menos; con 12 meses se ve el año completo.</div></div></section>
+      <div class="note">Llacolen, local a la calle: ${mill(F.L[0].anual)} al año (${mill(F.L[0].anual/12)} al mes), la base del modelo. El verano vende más y el invierno menos; con 12 meses se ve el año completo.</div></div></section>
 
-  <section id="r-capex"><div class="sh"><h2>Inversión para abrir (CAPEX)</h2><span class="n">local de 30 m² · montos netos</span></div>
+  <section id="r-capex"><div class="sh"><h2>Inversión para abrir (CAPEX)</h2><span class="n">local de 30 m² a la calle · montos netos</span></div>
     <div class="card tw"><table style="min-width:520px"><tr><th>Ítem</th><th class="r">Monto</th></tr>
       ${FRI.capex.map(x=>`<tr><td>${esc(x[0])}</td><td class="r num">${clp(x[1])}</td></tr>`).join("")}
       <tr><td><b>Total</b></td><td class="r num"><b>${clp(FRI.capex_total)}</b></td></tr></table></div>
-    <div class="note">Para comparar: en Chile, otras franquicias de açaí parten desde $49,8 M para un local de 30 m².</div></section>
+    <div class="note">Para comparar: en Chile, otras franquicias de açaí parten desde $49,8 M para un local de 30 m². Un local a la calle requiere menos obra que uno en centro comercial.</div></section>
 
-  <section id="r-opex"><div class="sh"><h2>Gastos mensuales (OPEX) y resultado</h2><span class="n">escenario base · local en centro comercial</span></div>
+  <section id="r-opex"><div class="sh"><h2>Gastos mensuales (OPEX) y resultado</h2><span class="n">escenario base · local a la calle</span></div>
     <div class="card tw"><table style="min-width:520px"><tr><th>Concepto</th><th class="r">Monto</th><th class="r">% venta</th></tr>
-      ${opRows.map(r=>`<tr><td>${esc(r[0])}</td><td class="r num ${r[1]<0?"":""}">${r[1]<0?"−":""}${clp(Math.abs(r[1]))}</td><td class="r num">${pc(Math.abs(r[1])/simVenta,1)}</td></tr>`).join("")}
+      ${opRows.map(r=>r[0][0]==="§"?`<tr class="grp"><td colspan="3">${esc(r[0].slice(1))}</td></tr>`:r[0][0]==="="?`<tr class="sub"><td>${esc(r[0].slice(1))}</td><td class="r num">${r[1]<0?"−":""}${clp(Math.abs(r[1]))}</td><td class="r num">${pc(Math.abs(r[1])/simVenta,1)}</td></tr>`:`<tr><td>${esc(r[0])}</td><td class="r num">${r[1]<0?"−":""}${clp(Math.abs(r[1]))}</td><td class="r num">${pc(Math.abs(r[1])/simVenta,1)}</td></tr>`).join("")}
       <tr><td><b>Resultado del local (EBITDA)</b></td><td class="r num"><b style="color:${R.ebMes>=0?"var(--ok)":"var(--crit)"}">${R.ebMes<0?"−":""}${clp(Math.abs(R.ebMes))}</b></td><td class="r num"><b>${pc(R.margen,1)}</b></td></tr></table></div>
-    <div class="note">El resultado mensual es antes de impuestos. La recuperación, la TIR y el VAN se calculan después del impuesto de primera categoría (${pc(M.impuesto)}). El primer año se proyecta al ${pc(M.ramp)} de la venta madura; después crece ${pc(M.crec)} al año. Al quinto año se recuperan la garantía y el capital de trabajo.</div></section>
+    <div class="note">Gastos fijos más insumos: ${clp(R.fijo+simVenta*R.pct[0])} al mes. El local cubre sus costos desde ${mill(R.equilibrio)} de venta mensual. El resultado mensual es antes de impuestos. La recuperación, la TIR y el VAN se calculan después del impuesto de primera categoría (${pc(M.impuesto)}). El primer año se proyecta al ${pc(M.ramp)} de la venta madura; después crece ${pc(M.crec)} al año. Al quinto año se recuperan la garantía y el capital de trabajo.</div></section>
 
   <section id="r-kpi"><div class="sh"><h2>Simulador del inversionista</h2><span class="n">mueve la venta o la inversión</span></div>
     <div class="g2">
@@ -922,6 +926,7 @@ function vFranquicia(){
         <input type="range" id="simV" min="8000000" max="30000000" step="500000" value="${simVenta}"><div class="small"><b id="simVv">${mill(simVenta)}</b></div>
         <label class="small muted" for="simC">Inversión para abrir</label>
         <input type="range" id="simC" min="30000000" max="90000000" step="1000000" value="${simCapex}"><div class="small"><b id="simCv">${mill(simCapex)}</b></div>
+        <button class="btn sm" id="simReset" style="justify-self:start">Volver al escenario base</button>
         <div class="flows" id="flows"></div>
         <div class="note">Barras: flujo de cada año después de impuestos (año 0 = inversión).</div></div>
       <div class="card bd chk">
@@ -949,7 +954,8 @@ function bindFranq(){
     const mx=Math.max(...R.flujos.map(Math.abs));
     $("#flows").innerHTML=R.flujos.map((f,t)=>`<div class="fl"><span>${t===0?"Inv.":"Año "+t}</span><div class="fb"><i class="${f<0?"neg":"pos"}" style="width:${(Math.abs(f)/mx*100).toFixed(1)}%"></i></div><b class="num">${f<0?"−":""}${mill(Math.abs(f))}</b></div>`).join("")};
   v.oninput=up;c.oninput=up;
-  const re=()=>{const y=scrollY;render();scrollTo({top:y})};v.onchange=re;c.onchange=re;up()}
+  const re=()=>{const y=scrollY;render();scrollTo({top:y})};v.onchange=re;c.onchange=re;
+  $("#simReset").onclick=()=>{simVenta=null;simCapex=null;re()};up()}
 
 // =================== RENDER ===================
 function render(){
